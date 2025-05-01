@@ -5,6 +5,7 @@ import { createApi } from '../../lib/api';
 import { User } from '@/types/User';
 import Modal from 'react-native-modal';
 import NfcManager, { Ndef, NfcTech } from 'react-native-nfc-manager';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 export default function ScanScreen() {
   const { idToken } = useAuth();
@@ -87,121 +88,123 @@ export default function ScanScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Scan - Get User Info</Text>
+    <ProtectedRoute>
+      <View style={styles.container}>
+        <Text style={styles.title}>Scan - Get User Info</Text>
 
-      <TextInput
-        placeholder="Enter user email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        style={styles.input}
-      />
+        <TextInput
+          placeholder="Enter user email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          style={styles.input}
+        />
 
-      <Button
-        title={loading ? 'Looking up...' : 'Lookup User'}
-        onPress={handleLookup}
-        disabled={loading || email.length === 0}
-      />
+        <Button
+          title={loading ? 'Looking up...' : 'Lookup User'}
+          onPress={handleLookup}
+          disabled={loading || email.length === 0}
+        />
 
-      {error && <Text style={styles.error}>{error}</Text>}
+        {error && <Text style={styles.error}>{error}</Text>}
 
-      {userInfo && (
-        <View style={styles.userInfo}>
-          <Text style={styles.userText}>Name: {userInfo.full_name}</Text>
-          <Text style={styles.userText}>Age: {userInfo.age}</Text>
-        </View>
-      )}
-      <TouchableOpacity style={styles.iconButtonSubmit} onPress={assignNfc}>
-          <Text>Assign NFC</Text>
-        </TouchableOpacity>
-      <Modal
-          animationIn={"slideInUp"}
-          isVisible={showModal}
-          onModalWillHide={() => setShowModal(false)}
-        >
-        <View>
+        {userInfo && (
+          <View style={styles.userInfo}>
+            <Text style={styles.userText}>Name: {userInfo.full_name}</Text>
+            <Text style={styles.userText}>Age: {userInfo.age}</Text>
+          </View>
+        )}
+        <TouchableOpacity style={styles.iconButtonSubmit} onPress={assignNfc}>
+            <Text>Assign NFC</Text>
+          </TouchableOpacity>
+        <Modal
+            animationIn={"slideInUp"}
+            isVisible={showModal}
+            onModalWillHide={() => setShowModal(false)}
+          >
           <View>
-            <Text>"{email}" has been written to the NFC successfully!</Text>
-            <TouchableOpacity onPress={() => setShowModal(false)}>
-              <Text>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      <Modal
-        animationIn={"slideInUp"}
-        isVisible={showModal}
-        onModalWillHide={() => setShowModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>"{email}" has been written to the NFC successfully!</Text>
-            <TouchableOpacity style={styles.modalButton} onPress={() => setShowModal(false)}>
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      <Modal
-        isVisible={isNfcDialogVisible}
-        onBackdropPress={hideNfcDialog}
-      >
-        <View style={styles.NfcDialogContainer}>
-          <Text style={styles.NfcDialogText}>Scanned {email}</Text>
-          <Button title="Close" onPress={hideNfcDialog} />
-        </View>
-      </Modal>
-      <Modal
-        isVisible={isSuccessDialogVisible}
-        onBackdropPress={hideSuccessDialog}
-      >
-        <View style={styles.successDialogContainer}>
-          <Text style={styles.successDialogText}> {"Successfully Scanned \n\n"}{email} </Text>
-        </View>
-      </Modal>
-      <Modal
-        isVisible={isFailureDialogVisible}
-        onBackdropPress={hideFailureDialog}
-      >
-        <View style={styles.failureDialogContainer}>
-          <Text style={styles.failureDialogText}>User {email} {"\n\n Not Found"}</Text>
-        </View>
-      </Modal>
-      <Modal
-        isVisible={isCheckedDialogVisible}
-        onBackdropPress={hideCheckedDialog}
-      >
-        <View style={styles.failureDialogContainer}>
-          <Text style={styles.failureDialogText}>User {email} {"\n\n Already Checked In\n\n"}</Text>
-        </View>
-      </Modal>
-
-      <Modal
-        isVisible={isServerFailureDialogVisible}
-        onBackdropPress={hideServerFailureDialog}
-      >
-        <View style={styles.failureDialogContainer}>
-          <Text style={styles.failureDialogText}>Server Error:{"\n"}{errorMsg}</Text>
-        </View>
-      </Modal>
-      <Modal
-          animationIn={"slideInUp"}
-          isVisible={isNfcModalVisible}
-          onModalWillHide={stopNfcScan}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalText}>Waiting for NFC...</Text>
-              <TouchableOpacity
-                onPress={stopNfcScan}
-              >
-                <Text>Close</Text>
+            <View>
+              <Text>"{email}" has been written to the NFC successfully!</Text>
+              <TouchableOpacity onPress={() => setShowModal(false)}>
+                <Text>OK</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
-    </View>
+        <Modal
+          animationIn={"slideInUp"}
+          isVisible={showModal}
+          onModalWillHide={() => setShowModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>"{email}" has been written to the NFC successfully!</Text>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setShowModal(false)}>
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          isVisible={isNfcDialogVisible}
+          onBackdropPress={hideNfcDialog}
+        >
+          <View style={styles.NfcDialogContainer}>
+            <Text style={styles.NfcDialogText}>Scanned {email}</Text>
+            <Button title="Close" onPress={hideNfcDialog} />
+          </View>
+        </Modal>
+        <Modal
+          isVisible={isSuccessDialogVisible}
+          onBackdropPress={hideSuccessDialog}
+        >
+          <View style={styles.successDialogContainer}>
+            <Text style={styles.successDialogText}> {"Successfully Scanned \n\n"}{email} </Text>
+          </View>
+        </Modal>
+        <Modal
+          isVisible={isFailureDialogVisible}
+          onBackdropPress={hideFailureDialog}
+        >
+          <View style={styles.failureDialogContainer}>
+            <Text style={styles.failureDialogText}>User {email} {"\n\n Not Found"}</Text>
+          </View>
+        </Modal>
+        <Modal
+          isVisible={isCheckedDialogVisible}
+          onBackdropPress={hideCheckedDialog}
+        >
+          <View style={styles.failureDialogContainer}>
+            <Text style={styles.failureDialogText}>User {email} {"\n\n Already Checked In\n\n"}</Text>
+          </View>
+        </Modal>
+
+        <Modal
+          isVisible={isServerFailureDialogVisible}
+          onBackdropPress={hideServerFailureDialog}
+        >
+          <View style={styles.failureDialogContainer}>
+            <Text style={styles.failureDialogText}>Server Error:{"\n"}{errorMsg}</Text>
+          </View>
+        </Modal>
+        <Modal
+            animationIn={"slideInUp"}
+            isVisible={isNfcModalVisible}
+            onModalWillHide={stopNfcScan}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>Waiting for NFC...</Text>
+                <TouchableOpacity
+                  onPress={stopNfcScan}
+                >
+                  <Text>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+      </View>
+    </ProtectedRoute>
   );
 }
 
