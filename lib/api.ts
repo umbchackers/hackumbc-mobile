@@ -1,10 +1,10 @@
 const BASE_URL = process.env.EXPO_PUBLIC_API_GATEWAY_URL;
 
-function createApi(accessToken: string | null) {
+function createApi(idToken: string | null) {
   async function request<T>(url: string, options: RequestInit = {}, isPublic = false): Promise<T> {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
-      ...(!isPublic && accessToken ? { 'Authorization': `${accessToken}` } : {}),
+      ...(!isPublic && idToken ? { 'Authorization': `${idToken}` } : {}),
       ...options.headers,
     };
 

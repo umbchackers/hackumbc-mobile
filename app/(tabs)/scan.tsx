@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { createApi } from '../../lib/api';
+import { User } from '@/types/User';
 
 export default function ScanScreen() {
   const { idToken } = useAuth();
   const api = createApi(idToken);
 
   const [email, setEmail] = useState('');
-  const [userInfo, setUserInfo] = useState<{ full_name: string; age: number } | null>(null);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
