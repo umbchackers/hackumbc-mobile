@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "hackumbc-mobile",
+    "name": "hackUMBC",
     "slug": "hackumbc-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,9 +13,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.hackumbc.hackumbcmobile"
     },
     "web": {
       "bundler": "metro",
