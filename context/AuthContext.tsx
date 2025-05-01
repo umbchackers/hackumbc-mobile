@@ -12,6 +12,7 @@ import { Platform } from 'react-native';
 interface AuthContextType {
   loggedIn: boolean;
   role: string | null;
+  idToken: string | null;
   accessToken: string | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
@@ -27,25 +28,28 @@ const poolData = {
 const userPool = new CognitoUserPool({ UserPoolId: poolData.UserPoolId, ClientId: poolData.ClientId });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState({ loggedIn: false, role: null as string | null, accessToken: null as string | null });
+  const [user, setUser] = useState({ loggedIn: false, role: null as string | null, idToken: null as string | null, accessToken: null as string | null });
   const [tokenExpiry, setTokenExpiry] = useState<Date | null>(null);
   const [pendingUser, setPendingUser] = useState<CognitoUser | null>(null);
 
   useEffect(() => {
     const loadStoredToken = async () => {
+      let storedIdToken;
       let storedAccessToken;
       let storedRefreshToken;
       if (Platform.OS === 'web') {
+        storedIdToken = await AsyncStorage.getItem('idToken');
         storedAccessToken = await AsyncStorage.getItem('accessToken');
         storedRefreshToken = await AsyncStorage.getItem('refreshToken');
       }
       else {
+        storedIdToken = await SecureStore.getItemAsync('idToken');
         storedAccessToken = await SecureStore.getItemAsync('accessToken');
         storedRefreshToken = await SecureStore.getItemAsync('refreshToken');
       }
 
       if (storedAccessToken) {
-        setUser({ loggedIn: true, role: 'admin', accessToken: storedAccessToken });
+        setUser({ loggedIn: true, role: 'admin', idToken: storedIdToken, accessToken: storedAccessToken });
         const tempExpiry = new Date(Date.now() + 3600 * 1000);
         setTokenExpiry(tempExpiry);
       } else if (storedRefreshToken) {
@@ -93,21 +97,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       cognitoUser.authenticateUser(authDetails, {
         onSuccess: async (result) => {
+          const idToken = result.getIdToken().getJwtToken();
           const accessToken = result.getAccessToken().getJwtToken();
           const refreshToken = result.getRefreshToken().getToken();
           const expiresIn = result.getAccessToken().getExpiration() - Math.floor(Date.now() / 1000);
           const expiryDate = new Date(Date.now() + expiresIn * 1000);
 
           if (Platform.OS === 'web') {
+            await AsyncStorage.setItem('idToken', idToken);
             await AsyncStorage.setItem('accessToken', accessToken);
             await AsyncStorage.setItem('refreshToken', refreshToken);
           }
           else {
+            await SecureStore.setItemAsync('idToken', idToken);
             await SecureStore.setItemAsync('accessToken', accessToken);
             await SecureStore.setItemAsync('refreshToken', refreshToken);
           }
 
-          setUser({ loggedIn: true, role: 'admin', accessToken });
+          setUser({ loggedIn: true, role: 'admin', idToken, accessToken });
           setTokenExpiry(expiryDate);
 
           console.log('Cognito login success', { accessToken });
@@ -135,21 +142,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       pendingUser.completeNewPasswordChallenge(newPassword, {}, {
         onSuccess: async (result) => {
+          const idToken = result.getIdToken().getJwtToken();
           const accessToken = result.getAccessToken().getJwtToken();
           const refreshToken = result.getRefreshToken().getToken();
           const expiresIn = result.getAccessToken().getExpiration() - Math.floor(Date.now() / 1000);
           const expiryDate = new Date(Date.now() + expiresIn * 1000);
 
           if (Platform.OS === 'web') {
+            await AsyncStorage.setItem('idToken', idToken);
             await AsyncStorage.setItem('accessToken', accessToken);
             await AsyncStorage.setItem('refreshToken', refreshToken);
           }
           else {
+            await SecureStore.setItemAsync('idToken', idToken);
             await SecureStore.setItemAsync('accessToken', accessToken);
             await SecureStore.setItemAsync('refreshToken', refreshToken);
           }
 
-          setUser({ loggedIn: true, role: 'admin', accessToken });
+          setUser({ loggedIn: true, role: 'admin', idToken, accessToken });
           setTokenExpiry(expiryDate);
           setPendingUser(null);
 
@@ -183,18 +193,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
           }
 
+          const newIdToken = session.getIdToken().getJwtToken();
           const newAccessToken = session.getAccessToken().getJwtToken();
           const expiresIn = session.getAccessToken().getExpiration() - Math.floor(Date.now() / 1000);
           const expiryDate = new Date(Date.now() + expiresIn * 1000);
 
           if (Platform.OS === 'web') {
+            await AsyncStorage.setItem('idToken', newIdToken);
             await AsyncStorage.setItem('acessToken', newAccessToken);
           }
           else {
+            await SecureStore.setItem('idToken', newIdToken);
             await SecureStore.setItemAsync('accessToken', newAccessToken);
           }
 
-          setUser({ loggedIn: true, role: 'admin', accessToken: newAccessToken });
+          setUser({ loggedIn: true, role: 'admin', idToken: newIdToken, accessToken: newAccessToken });
           setTokenExpiry(expiryDate);
 
           console.log('Successfully refreshed token');
@@ -209,14 +222,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     currentUser?.signOut();
 
     if (Platform.OS === 'web') {
+      await AsyncStorage.removeItem('idToken');
       await AsyncStorage.removeItem('accessToken');
       await AsyncStorage.removeItem('refreshToken');
     }
     else {
+      await SecureStore.deleteItemAsync('idToken');
       await SecureStore.deleteItemAsync('accessToken');
       await SecureStore.deleteItemAsync('refreshToken');
     }
-    setUser({ loggedIn: false, role: null, accessToken: null });
+    setUser({ loggedIn: false, role: null, idToken: null, accessToken: null });
     setTokenExpiry(null);
   };
 
