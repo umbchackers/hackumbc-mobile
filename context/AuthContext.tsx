@@ -15,6 +15,7 @@ interface AuthContextType {
   accessToken: string | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  completeNewPassword: (newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +29,7 @@ const userPool = new CognitoUserPool({ UserPoolId: poolData.UserPoolId, ClientId
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState({ loggedIn: false, role: null as string | null, accessToken: null as string | null });
   const [tokenExpiry, setTokenExpiry] = useState<Date | null>(null);
+  const [pendingUser, setPendingUser] = useState<CognitoUser | null>(null);
 
   useEffect(() => {
     const loadStoredToken = async () => {
@@ -115,6 +117,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.error('Cognito login failure', err);
           reject(err);
         },
+        newPasswordRequired: (userAttributes, requiredAttributes) => {
+          console.log('New password required.');
+          setPendingUser(cognitoUser);
+          reject({ challenge: 'NEW_PASSWORD_REQUIRED' });
+        },
+      });
+    });
+  };
+
+  const completeNewPassword = async (newPassword: string) => {
+    return new Promise<void>((resolve, reject) => {
+      if (!pendingUser) {
+        reject('No pending user for new password.');
+        return;
+      }
+
+      pendingUser.completeNewPasswordChallenge(newPassword, {}, {
+        onSuccess: async (result) => {
+          const accessToken = result.getAccessToken().getJwtToken();
+          const refreshToken = result.getRefreshToken().getToken();
+          const expiresIn = result.getAccessToken().getExpiration() - Math.floor(Date.now() / 1000);
+          const expiryDate = new Date(Date.now() + expiresIn * 1000);
+
+          if (Platform.OS === 'web') {
+            await AsyncStorage.setItem('accessToken', accessToken);
+            await AsyncStorage.setItem('refreshToken', refreshToken);
+          }
+          else {
+            await SecureStore.setItemAsync('accessToken', accessToken);
+            await SecureStore.setItemAsync('refreshToken', refreshToken);
+          }
+
+          setUser({ loggedIn: true, role: 'admin', accessToken });
+          setTokenExpiry(expiryDate);
+          setPendingUser(null);
+
+          resolve();
+        },
+        onFailure: (err) => {
+          console.error('Failed completing new password challenge', err);
+          reject(err);
+        },
       });
     });
   };
@@ -177,7 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...user, login, logout }}>
+    <AuthContext.Provider value={{ ...user, login, logout, completeNewPassword }}>
       {children}
     </AuthContext.Provider>
   );

@@ -19,8 +19,15 @@ export default function LoginScreen() {
       await login(username, password);
       router.replace('/');
     } catch (err) {
-      console.error('Login failed', err);
-      setError('Invalid username or password.');
+      if (typeof err === 'object' && err !== null && 'challenge' in err) {
+        if ((err as { challenge: string }).challenge === 'NEW_PASSWORD_REQUIRED') {
+          console.log('Redirecting to new password page...');
+          router.replace('/newpassword');
+        }
+      } else {
+        console.error('Login failed', err);
+        setError('Invalid username or password.');
+      }
     } finally {
       setLoading(false);
     }
