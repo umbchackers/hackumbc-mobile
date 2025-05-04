@@ -9,14 +9,22 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to scan QR codes used for checking users in to the event",
+        "NFCReaderUsageDescription": "This app uses NFC technology to read and write to NFC tags used for identifying users"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.hackumbc.hackumbcmobile"
+      "package": "com.hackumbc.hackumbcmobile",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.NFC"
+      ]
     },
     "web": {
       "bundler": "metro",
