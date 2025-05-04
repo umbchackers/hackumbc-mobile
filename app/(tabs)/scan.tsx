@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { createApi } from '../../lib/api';
-import { User } from '@/types/User';
+import { User } from '@/types';
 import Modal from 'react-native-modal';
 import NfcManager, { Ndef, NfcTech } from 'react-native-nfc-manager';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
