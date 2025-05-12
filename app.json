@@ -41,6 +41,13 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "hackUMBC needs access to your Camera.",
+          "enableCodeScanner": true
+        }
       ]
     ],
     "experiments": {
