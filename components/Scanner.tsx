@@ -30,7 +30,7 @@ export default function Scanner({ onScanned }: { onScanned: (payload: string) =>
             else {
                 console.log('Why tf are there multiple codes...?');
             }
-            showCamera;
+            hideCamera();
         }
     });
 
