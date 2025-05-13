@@ -11,9 +11,10 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "This app uses the camera to scan QR codes used for checking users in to the event",
-        "NFCReaderUsageDescription": "This app uses NFC technology to read and write to NFC tags used for identifying users"
-      }
+        "NSCameraUsageDescription": "hackUMBC needs access to your Camera.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.hackumbc.hackumbcmobile"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,8 +23,7 @@
       },
       "package": "com.hackumbc.hackumbcmobile",
       "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.NFC"
+        "android.permission.CAMERA"
       ]
     },
     "web": {
