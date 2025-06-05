@@ -29,6 +29,14 @@ export default function TabsLayout() {
             headerRight: () => role === 'admin' && <Button title="Logout" onPress={logout} />,
         }} 
       />
+      <Tabs.Screen
+          name="checkin" 
+          options={{
+              title: 'Check in',
+              href: '/checkin',
+              headerRight: () => role === 'admin' && <Button title="Logout" onPress={logout} />,
+          }} 
+        />
 
     </Tabs>
   );
