@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 
+//test comment for commit
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
