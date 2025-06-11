@@ -41,3 +41,4 @@ app-example
 
 android/
 ios/
+.env.example
