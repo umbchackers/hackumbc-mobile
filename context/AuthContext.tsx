@@ -1,13 +1,13 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import {
-  CognitoUserPool,
-  CognitoUser,
-  AuthenticationDetails,
-  CognitoRefreshToken,
-} from 'amazon-cognito-identity-js';
 import AsyncStorage  from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import {
+  fetchAuthSession,
+  signIn,
+  signOut,
+  confirmSignIn
+} from 'aws-amplify/auth';
 
 interface AuthContextType {
   loggedIn: boolean;
@@ -21,40 +21,32 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const poolData = {
-  UserPoolId: process.env.EXPO_PUBLIC_COGNITO_USER_POOL_ID ?? '',
-  ClientId: process.env.EXPO_PUBLIC_COGNITO_CLIENT_ID ?? '',
-};
-const userPool = new CognitoUserPool({ UserPoolId: poolData.UserPoolId, ClientId: poolData.ClientId });
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState({ loggedIn: false, role: null as string | null, idToken: null as string | null, accessToken: null as string | null });
   const [tokenExpiry, setTokenExpiry] = useState<Date | null>(null);
-  const [pendingUser, setPendingUser] = useState<CognitoUser | null>(null);
+  const [challengeData, setChallengeData] = useState<any | null>(null);
 
   useEffect(() => {
     const loadStoredToken = async () => {
       let storedIdToken;
       let storedAccessToken;
-      let storedRefreshToken;
       if (Platform.OS === 'web') {
         storedIdToken = await AsyncStorage.getItem('idToken');
         storedAccessToken = await AsyncStorage.getItem('accessToken');
-        storedRefreshToken = await AsyncStorage.getItem('refreshToken');
       }
       else {
         storedIdToken = await SecureStore.getItemAsync('idToken');
         storedAccessToken = await SecureStore.getItemAsync('accessToken');
-        storedRefreshToken = await SecureStore.getItemAsync('refreshToken');
       }
 
       if (storedAccessToken) {
+        const session = await fetchAuthSession();
+        const expiresIn = session.tokens?.accessToken.payload.exp! - Math.floor(Date.now() / 1000);
+        const expiryDate = new Date(Date.now() + expiresIn * 1000);
+
         setUser({ loggedIn: true, role: 'admin', idToken: storedIdToken, accessToken: storedAccessToken });
-        const tempExpiry = new Date(Date.now() + 3600 * 1000);
-        setTokenExpiry(tempExpiry);
-      } else if (storedRefreshToken) {
-        await tryRefreshToken(storedRefreshToken);
-      }
+        setTokenExpiry(expiryDate);
+      } 
     }
     loadStoredToken();
   }, []);
@@ -64,172 +56,96 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const interval = setInterval(async () => {
       if (tokenExpiry && new Date() > tokenExpiry) {
-        console.log('Access token expired, trying to refresh...');
-        let storedRefreshToken;
-        if (Platform.OS === 'web') {
-          storedRefreshToken = await AsyncStorage.getItem('refreshToken');
-        }
-        else {
-          storedRefreshToken = await SecureStore.getItemAsync('refreshToken');
-        }
-        if (storedRefreshToken) {
-          await tryRefreshToken(storedRefreshToken);
-        } else {
-          logout();
-        }
+        console.log('Access token expired, logging out...');
+        logout();
       }
-    }, 1000 * 60);
+    });
 
     return () => clearInterval(interval);
   }, [tokenExpiry]);
 
   const login = async (username: string, password: string) => {
-    return new Promise<void>((resolve, reject) => {
-      const cognitoUser = new CognitoUser({
-        Username: username,
-        Pool: userPool,
-      });
-
-      const authDetails = new AuthenticationDetails({
-        Username: username,
-        Password: password
-      });
-
-      cognitoUser.authenticateUser(authDetails, {
-        onSuccess: async (result) => {
-          const idToken = result.getIdToken().getJwtToken();
-          const accessToken = result.getAccessToken().getJwtToken();
-          const refreshToken = result.getRefreshToken().getToken();
-          const expiresIn = result.getAccessToken().getExpiration() - Math.floor(Date.now() / 1000);
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const { isSignedIn, nextStep } = await signIn({username, password});
+        if (isSignedIn) {
+          const session = await fetchAuthSession();
+          const idToken = session.tokens?.idToken?.toString()!;
+          const accessToken = session.tokens?.accessToken?.toString()!;
+          const expiresIn = session.tokens?.accessToken.payload.exp! - Math.floor(Date.now() / 1000);
           const expiryDate = new Date(Date.now() + expiresIn * 1000);
-
+          
           if (Platform.OS === 'web') {
             await AsyncStorage.setItem('idToken', idToken);
             await AsyncStorage.setItem('accessToken', accessToken);
-            await AsyncStorage.setItem('refreshToken', refreshToken);
           }
           else {
             await SecureStore.setItemAsync('idToken', idToken);
             await SecureStore.setItemAsync('accessToken', accessToken);
-            await SecureStore.setItemAsync('refreshToken', refreshToken);
           }
-
+          // TODO implement roles with Cognito user groups
           setUser({ loggedIn: true, role: 'admin', idToken, accessToken });
           setTokenExpiry(expiryDate);
-
-          console.log('Cognito login success', { accessToken });
+          console.log('Cognito login success');
           resolve();
-        },
-        onFailure: (err) => {
-          console.error('Cognito login failure', err);
-          reject(err);
-        },
-        newPasswordRequired: (userAttributes, requiredAttributes) => {
-          console.log('New password required.');
-          setPendingUser(cognitoUser);
-          reject({ challenge: 'NEW_PASSWORD_REQUIRED' });
-        },
-      });
+        }
+        else if (nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+          setChallengeData(nextStep);
+          reject({ challenge: 'NEW_PASSWORD_REQUIRED' })
+        }
+        else {
+          console.log('Login failed');
+          console.log(nextStep);
+        }
+      }
+      catch (err: any) {
+        console.error(`err: ${err}`);
+        reject(err);
+      }
     });
   };
 
   const completeNewPassword = async (newPassword: string) => {
-    return new Promise<void>((resolve, reject) => {
-      if (!pendingUser) {
-        reject('No pending user for new password.');
-        return;
-      }
-
-      pendingUser.completeNewPasswordChallenge(newPassword, {}, {
-        onSuccess: async (result) => {
-          const idToken = result.getIdToken().getJwtToken();
-          const accessToken = result.getAccessToken().getJwtToken();
-          const refreshToken = result.getRefreshToken().getToken();
-          const expiresIn = result.getAccessToken().getExpiration() - Math.floor(Date.now() / 1000);
-          const expiryDate = new Date(Date.now() + expiresIn * 1000);
-
-          if (Platform.OS === 'web') {
-            await AsyncStorage.setItem('idToken', idToken);
-            await AsyncStorage.setItem('accessToken', accessToken);
-            await AsyncStorage.setItem('refreshToken', refreshToken);
-          }
-          else {
-            await SecureStore.setItemAsync('idToken', idToken);
-            await SecureStore.setItemAsync('accessToken', accessToken);
-            await SecureStore.setItemAsync('refreshToken', refreshToken);
-          }
-
-          setUser({ loggedIn: true, role: 'admin', idToken, accessToken });
-          setTokenExpiry(expiryDate);
-          setPendingUser(null);
-
-          resolve();
-        },
-        onFailure: (err) => {
-          console.error('Failed completing new password challenge', err);
-          reject(err);
-        },
-      });
-    });
-  };
-
-  const tryRefreshToken = async (storedRefreshToken: string) => {
-    return new Promise<void>((resolve, reject) => {
-      const currentUser = userPool.getCurrentUser();
-
-      if (!currentUser) {
-        logout();
-        reject();
-        return;
-      }
-
-      currentUser.refreshSession(
-        new CognitoRefreshToken({ RefreshToken: storedRefreshToken }),
-        async (err, session) => {
-          if (err) {
-            console.error('Refresh token failed:', err);
-            logout();
-            reject();
-            return;
-          }
-
-          const newIdToken = session.getIdToken().getJwtToken();
-          const newAccessToken = session.getAccessToken().getJwtToken();
-          const expiresIn = session.getAccessToken().getExpiration() - Math.floor(Date.now() / 1000);
-          const expiryDate = new Date(Date.now() + expiresIn * 1000);
-
-          if (Platform.OS === 'web') {
-            await AsyncStorage.setItem('idToken', newIdToken);
-            await AsyncStorage.setItem('acessToken', newAccessToken);
-          }
-          else {
-            await SecureStore.setItem('idToken', newIdToken);
-            await SecureStore.setItemAsync('accessToken', newAccessToken);
-          }
-
-          setUser({ loggedIn: true, role: 'admin', idToken: newIdToken, accessToken: newAccessToken });
-          setTokenExpiry(expiryDate);
-
-          console.log('Successfully refreshed token');
-          resolve();
+    return new Promise<void>(async (resolve, reject) => {
+      if (!challengeData) throw new Error('No pending new password challenge ');
+      try {
+        await confirmSignIn({ challengeResponse: newPassword });
+        const session = await fetchAuthSession();
+        const idToken = session.tokens?.idToken?.toString()!;
+        const accessToken = session.tokens?.accessToken?.toString()!;
+        const expiresIn = session.tokens?.accessToken.payload.exp! - Math.floor(Date.now() / 1000);
+        const expiryDate = new Date(Date.now() + expiresIn * 1000);
+        
+        if (Platform.OS === 'web') {
+          await AsyncStorage.setItem('idToken', idToken);
+          await AsyncStorage.setItem('accessToken', accessToken);
         }
-      );
+        else {
+          await SecureStore.setItemAsync('idToken', idToken);
+          await SecureStore.setItemAsync('accessToken', accessToken);
+        }
+
+        setUser({ loggedIn: true, role: 'admin', idToken, accessToken });
+        setTokenExpiry(expiryDate);
+        setChallengeData(null);
+        resolve();
+      } catch (err) {
+        console.error(`Complete new password error: ${err}`);
+        reject(err);
+      }
     });
   };
 
   const logout = async () => {
-    const currentUser = userPool.getCurrentUser();
-    currentUser?.signOut();
-
+    await signOut();
+    
     if (Platform.OS === 'web') {
       await AsyncStorage.removeItem('idToken');
       await AsyncStorage.removeItem('accessToken');
-      await AsyncStorage.removeItem('refreshToken');
     }
     else {
       await SecureStore.deleteItemAsync('idToken');
       await SecureStore.deleteItemAsync('accessToken');
-      await SecureStore.deleteItemAsync('refreshToken');
     }
     setUser({ loggedIn: false, role: null, idToken: null, accessToken: null });
     setTokenExpiry(null);
