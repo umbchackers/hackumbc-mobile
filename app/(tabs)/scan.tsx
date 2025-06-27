@@ -48,7 +48,9 @@ export default function ScanScreen() {
   }
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute
+      allowedRoles={['admin']}
+    >
       <View style={styles.container}>
         <Text style={styles.title}>Scan - Get User Info</Text>
 

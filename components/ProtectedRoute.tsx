@@ -1,16 +1,18 @@
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { UserRole } from '@/types';
+import { validateRoles } from '@/lib/util';
 
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { loggedIn, role } = useAuth();
+export function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode, allowedRoles: UserRole[] }) {
+  const { loggedIn, roles } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loggedIn || role !== 'admin') {
+    if (!loggedIn || (!validateRoles(allowedRoles, roles) || roles === null)) {
       router.replace('/');
     }
-  }, [loggedIn, role]);
+  }, [loggedIn, roles]);
 
   return <>{children}</>;
 }
