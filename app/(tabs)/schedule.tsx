@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { createApi } from '../../lib/api';
+import { StyleSheet} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface Activity {
   time: string;
@@ -39,7 +41,18 @@ export default function ScheduleScreen() {
   const currentDay = schedule[selectedDayIndex];
 
   return (
-    <View style={{ flex: 1, paddingTop: 20 }}>
+    <View style={{ flex: 1, paddingTop: 20}}>
+    
+    {/*
+      <LinearGradient
+        // Background Linear Gradient
+        colors={['#D7FFED', '#E37302']}
+        style={styles.background}
+        start={{ x: 0.1, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
+    */}
+
       <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20 }}>
         {schedule.map((dayItem, index) => (
           <TouchableOpacity
@@ -80,3 +93,19 @@ export default function ScheduleScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'orange',
+  },
+  background: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 852
+  }
+});
