@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import Scanner from '@/components/Scanner';
 import { decrypt } from '@/lib/qr';
 import BottomNav from '@/components/BottomNav';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ScanScreen() {
   const { idToken } = useAuth();
@@ -49,36 +50,43 @@ export default function ScanScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f5b2b2' }}>
-      <View style={{ flex: 1 }}>
-        <View style={styles.innerContent}>
-          <Text style={styles.title}>Scan - Get User Info</Text>
-          <TextInput
-            placeholder="Enter user email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            style={styles.input}
-          />
-          <Button
-            title={loading ? 'Looking up...' : 'Lookup User'}
-            onPress={handleLookup}
-            disabled={loading || email.length === 0}
-          />
-          {error && <Text style={styles.error}>{error}</Text>}
-          {userInfo && (
-            <View style={styles.userInfo}>
-              <Text style={styles.userText}>Name: {userInfo.full_name}</Text>
-              <Text style={styles.userText}>Age: {userInfo.age}</Text>
-            </View>
-          )}
-          <Scanner
-            onScanned={(payload) => unpackPayload(payload)}
-          />
+    <LinearGradient
+      colors={['#c7efe6', '#f18e21']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.innerContent}>
+            <Text style={styles.title}>Scan - Get User Info</Text>
+            <TextInput
+              placeholder="Enter user email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              style={styles.input}
+            />
+            <Button
+              title={loading ? 'Looking up...' : 'Lookup User'}
+              onPress={handleLookup}
+              disabled={loading || email.length === 0}
+            />
+            {error && <Text style={styles.error}>{error}</Text>}
+            {userInfo && (
+              <View style={styles.userInfo}>
+                <Text style={styles.userText}>Name: {userInfo.full_name}</Text>
+                <Text style={styles.userText}>Age: {userInfo.age}</Text>
+              </View>
+            )}
+            <Scanner
+              onScanned={(payload) => unpackPayload(payload)}
+            />
+          </View>
         </View>
-      </View>
-      <BottomNav />
-    </SafeAreaView>
+        <BottomNav />
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
