@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { SafeAreaView, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { createApi } from '../../lib/api';
 import { User, QrPayload } from '@/types';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import Scanner from '@/components/Scanner';
 import { decrypt } from '@/lib/qr';
+import BottomNav from '@/components/BottomNav';
 
 export default function ScanScreen() {
   const { idToken } = useAuth();
@@ -48,45 +49,48 @@ export default function ScanScreen() {
   }
 
   return (
-    <ProtectedRoute>
-      <View style={styles.container}>
-        <Text style={styles.title}>Scan - Get User Info</Text>
-
-        <TextInput
-          placeholder="Enter user email"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          style={styles.input}
-        />
-
-        <Button
-          title={loading ? 'Looking up...' : 'Lookup User'}
-          onPress={handleLookup}
-          disabled={loading || email.length === 0}
-        />
-
-        {error && <Text style={styles.error}>{error}</Text>}
-
-        {userInfo && (
-          <View style={styles.userInfo}>
-            <Text style={styles.userText}>Name: {userInfo.full_name}</Text>
-            <Text style={styles.userText}>Age: {userInfo.age}</Text>
-          </View>
-        )}
-
-        <Scanner
-          onScanned={(payload) => unpackPayload(payload)}
-        />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f5b2b2' }}>
+      <View style={{ flex: 1 }}>
+        <View style={styles.innerContent}>
+          <Text style={styles.title}>Scan - Get User Info</Text>
+          <TextInput
+            placeholder="Enter user email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            style={styles.input}
+          />
+          <Button
+            title={loading ? 'Looking up...' : 'Lookup User'}
+            onPress={handleLookup}
+            disabled={loading || email.length === 0}
+          />
+          {error && <Text style={styles.error}>{error}</Text>}
+          {userInfo && (
+            <View style={styles.userInfo}>
+              <Text style={styles.userText}>Name: {userInfo.full_name}</Text>
+              <Text style={styles.userText}>Age: {userInfo.age}</Text>
+            </View>
+          )}
+          <Scanner
+            onScanned={(payload) => unpackPayload(payload)}
+          />
+        </View>
       </View>
-    </ProtectedRoute>
+      <BottomNav />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    padding: 0,
+    backgroundColor: '#f5b2b2',
+  },
+  innerContent: {
+    flex: 1,
     padding: 20,
-    marginTop: 50,
   },
   title: {
     fontSize: 24,

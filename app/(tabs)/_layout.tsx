@@ -6,7 +6,12 @@ export default function TabsLayout() {
   const { role, logout } = useAuth();
 
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { display: 'none' },
+      }}
+    >
       <Tabs.Screen
         name="index" 
         options={{
