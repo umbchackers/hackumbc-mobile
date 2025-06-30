@@ -25,7 +25,7 @@ export default function ScheduleScreen() {
   const [schedule, setSchedule] = useState<DaySchedule[]>([]);
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
-
+  {/* i commented this out because i want to test with mock data, but that never loads with this
   useEffect(() => {
     (async () => {
       try {
@@ -38,7 +38,8 @@ export default function ScheduleScreen() {
       }
     })();
   }, []);
-
+  */}
+  console.log(schedule);
   // For testing: add a bunch of mock events if schedule is empty
   useEffect(() => {
     if (schedule.length === 0) {
@@ -121,13 +122,14 @@ export default function ScheduleScreen() {
 
         {/* timeline card*/}
         <View style={styles.cardWrap}>
-          <View style={styles.card}>
+          <LinearGradient
+            colors={['#fdfefd', '#fffaf2']}
+            style={styles.card}
+          >
             {error && <Text style={styles.error}>{error}</Text>}
-
             {!day && !error && (
               <Text style={styles.noData}>No schedule for this day</Text>
             )}
-
             {day && (
               <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -136,7 +138,6 @@ export default function ScheduleScreen() {
                 {day.activities.map((item, i) => (
                   <View key={i} style={styles.row}>
                     {i !== 0 && <View style={styles.separator} />}
-
                     <Text
                       style={styles.activity}
                       numberOfLines={2}
@@ -149,7 +150,7 @@ export default function ScheduleScreen() {
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
-                      {item.time}
+                      {item.time.match(/am|pm|AM|PM/) ? item.time : `${item.time} AM`}
                     </Text>
                     <TouchableOpacity style={styles.infoPill}>
                       <Text style={styles.infoText}>INFO</Text>
@@ -158,7 +159,7 @@ export default function ScheduleScreen() {
                 ))}
               </ScrollView>
             )}
-          </View>
+          </LinearGradient>
         </View>
       </SafeAreaView>
       {/* footer nav */}
@@ -205,21 +206,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    width: 340,
-    minWidth: 320,
-    maxWidth: 360,
+    width: '90%',
+    maxWidth: 380,
     borderRadius: 32,
-    paddingTop: 40,
-    paddingHorizontal: 36,
-    paddingBottom: 40,
-    backgroundColor: '#fff',
+    paddingTop: 32,
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+    marginBottom: 110, // so it doesnt overlap with bottom nav
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
     shadowColor: '#000',
     shadowOpacity: 0.13,
     shadowRadius: 15,
     shadowOffset: { width: 0, height: 10 },
-    alignItems: 'stretch',
-    justifyContent: 'flex-start',
-    marginBottom: 32,
+    overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   },
   time: {
     flex: 1,
-    minWidth: 60,
+    minWidth: 80,
     textAlign: 'center',
     fontWeight: 'bold',
     color: '#0c4b46',

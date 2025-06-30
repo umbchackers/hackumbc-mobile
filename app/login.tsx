@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    fontFamily: 'Lemon',
+    fontFamily: 'LilitaOne',
     fontSize: 32,
     color: '#0C6366',
     textShadowColor: 'rgba(0,0,0,0.25)',
