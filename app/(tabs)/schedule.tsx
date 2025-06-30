@@ -123,8 +123,11 @@ export default function ScheduleScreen() {
         {/* timeline card*/}
         <View style={styles.cardWrap}>
           <LinearGradient
-            colors={['#fdfefd', '#fffaf2']}
+            colors={['#e8f9e5', '#f6f8e0', '#fef7e1']} // needs to be adjusted a bit, but for now this good
             style={styles.card}
+            locations={[0, 0.5, 1]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
           >
             {error && <Text style={styles.error}>{error}</Text>}
             {!day && !error && (
