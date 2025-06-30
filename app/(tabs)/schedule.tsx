@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Platform, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import BottomNav from '@/components/BottomNav';
@@ -92,9 +92,9 @@ export default function ScheduleScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         {/* title shi */}
         <View style={styles.titleRow}>
-          <Text style={styles.star}>✱</Text>
+          <Image source={require('../../assets/images/flower-asset-3.png')} style={styles.flowerImgLeft} />
           <Text style={styles.title}>SCHEDULE</Text>
-          <Text style={[styles.star, { color: '#f18e21' }]}>✱</Text>
+          <Image source={require('../../assets/images/flower-asset-5.png')} style={styles.flowerImgRight} />
         </View>
 
         {/* day toggle khang when u read this heres a funny message: so gm? ts lmfao */}
@@ -184,12 +184,26 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     justifyContent: 'center',
   },
-  star: { fontSize: 22, color: '#e95d2e', marginHorizontal: 2 },
+  flowerImgLeft: {
+    width: 32,
+    height: 32,
+    marginRight: 4,
+    marginTop: -10,
+  },
+  flowerImgRight: {
+    width: 32,
+    height: 32,
+    marginLeft: 4,
+    marginTop: -10,
+  },
   title: {
-    fontSize: 30,
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#0c4b46',
-    letterSpacing: 1.5,
+    color: '#00695c',
+    letterSpacing: 2,
+    textShadowColor: '#fff',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   daySwitch: { flexDirection: 'row', marginBottom: 16, justifyContent: 'center' },
   dayPill: {
