@@ -38,8 +38,8 @@ export default function ScheduleScreen() {
       }
     })();
   }, []);
-  */}
   console.log(schedule);
+  */}
   // For testing: add a bunch of mock events if schedule is empty
   useEffect(() => {
     if (schedule.length === 0) {
