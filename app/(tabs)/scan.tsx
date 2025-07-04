@@ -35,11 +35,11 @@ export default function ScanScreen() {
 
   return (
     <LinearGradient
-      colors={['#c7efe6', '#f18e21']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ flex: 1 }}
-    >
+            colors={['#D7FFED', '#E37302']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFillObject}
+          >
       <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
         <View style={{ flex: 1 }}>
           <View style={styles.innerContent}>

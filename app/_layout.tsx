@@ -5,17 +5,29 @@ import '@/amplify.config';
 import 'react-native-get-random-values';
 import LogoutButton from '@/components/LogoutButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'react-native';
+import { View, StatusBar, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { useFonts } from 'expo-font';
 export default function RootLayout() {
+
+  //fonts
+const [fontsLoaded] = useFonts({
+    'LilitaOne': require('../assets/fonts/LilitaOne-Regular.ttf'),
+    'Lemon': require('../assets/fonts/Lemon-Regular.ttf'),
+  });
+if (!fontsLoaded) {
+    return null; // or a loading indicator maybe idk
+}
   return (
-    <LinearGradient
-      colors={['#c7efe6', '#f18e21']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ flex: 1 }}
-    >
+    // This View now serves as the canvas for the universal background gradient.
+    <View style={{ flex: 1 }}>
+      
+      <LinearGradient
+        colors={['#D7FFED', '#E37302']} // Your desired app-wide gradient colors
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFillObject} 
+      />
       <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
         <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
         <AuthProvider>
@@ -26,6 +38,6 @@ export default function RootLayout() {
           <LogoutButton />
         </AuthProvider>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }

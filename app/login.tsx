@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, Pressable } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Dimensions, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -48,178 +49,184 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-      {/* button so u can go back to home, not (strand- not to be confused with the dark subclass)ed ts */}
-      <Pressable
-        style={{ position: 'absolute', top: 18, left: 18, zIndex: 10, flexDirection: 'row', alignItems: 'center' }}
-        onPress={() => router.replace('/')}
-      >
-        <Ionicons name="arrow-back" size={28} color="#E37302" />
-        <Text style={{ color: '#E37302', fontWeight: 'bold', fontSize: 16, marginLeft: 4 }}>Home</Text>
-      </Pressable>
+    <View style={styles.fullScreenContainer}>
+      {/* Background Gradient - covers the entire screen */}
       <LinearGradient
         colors={['#D7FFED', '#E37302']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[StyleSheet.absoluteFill, styles.screen]}
-      >
-        <View style={styles.overlay} />
-        <View style={styles.cardWrapper}>
-          <LinearGradient
-            colors={['rgba(215,255,237,0.47)', 'rgba(244,255,234,0.47)']}
-            start={{ x: 0.2, y: 0.0 }}
-            end={{ x: 1.0, y: 1.0 }}
-            style={styles.card}
-          >
-            {/* hack logo (dawg) */}
-            <Image
-              source={require('../assets/images/hackumbcdog2025.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            {/* hackUMBC wordmark */}
-            <Image
-              source={require('../assets/images/hacklogo2025.png')}
-              style={styles.wordmark}
-              resizeMode="contain"
-            />
-            {/* username input */}
-            <TextInput
-              placeholder="USERNAME"
-              placeholderTextColor="#E37302"
-              value={username}
-              onChangeText={setUsername}
-              style={styles.input}
-              autoCapitalize="none"
-            />
-            {/* password input */}
-            <TextInput
-              placeholder="PASSWORD"
-              placeholderTextColor="#E37302"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              style={styles.input}
-            />
-            {error && <Text style={styles.error}>{error}</Text>}
-            {/* login button with flowers */}
-            <View style={styles.loginButtonRow}>
-              <Pressable style={styles.button} onPress={handleLogin} disabled={loading}>
-                <Text style={styles.buttonText}>{loading ? '...' : 'Login'}</Text>
-                {/* top right flower */}
-                <Image
-                  source={require('../assets/images/flower-asset-5.png')}
-                  style={styles.flower}
-                />
-                {/* bottom left flower */}
-                <Image
-                  source={require('../assets/images/flower-asset-3.png')}
-                  style={styles.flowerLeft}
-                />
-              </Pressable>
-            </View>
-          </LinearGradient>
-        </View>
-      </LinearGradient>
-    </SafeAreaView>
+        style={StyleSheet.absoluteFillObject}
+      />
+
+      {/* SafeAreaView to position content within safe areas */}
+      <SafeAreaView style={styles.safeAreaContent}>
+        <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
+
+        {/* button so u can go back to home, not (strand- not to be confused with the dark subclass)ed ts */}
+        <Pressable
+          style={styles.backButton}
+          onPress={() => router.replace('/')}
+        >
+          <Ionicons name="arrow-back" size={28} color="#E37302" />
+          <Text style={styles.backButtonText}>Home</Text>
+        </Pressable>
+
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          {/* Main content wrapper, centers the card */}
+          <View style={styles.centered}>
+            <LinearGradient
+              colors={['rgba(215,255,237,0.47)', 'rgba(244,255,234,0.47)']}
+              start={{ x: 0.07, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.card}
+            >
+              <Image source={require('../assets/images/hackumbcdog2025.png')} style={styles.logoIcon} />
+              <Image source={require('../assets/images/hacklogo2025.png')} style={styles.logoText} />
+              <TextInput
+                style={styles.input}
+                placeholder="USERNAME"
+                placeholderTextColor="#E37302"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="PASSWORD"
+                placeholderTextColor="#E37302"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+              {error ? <Text style={styles.error}>{error}</Text> : null}
+              <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+                <View style={styles.loginTextContainer}>
+                  {/* Red flower: bottom left, overlap the "L" */}
+                  <Image source={require('../assets/images/flower-asset-3.png')} style={styles.flowerLeft} />
+                  {/* Login text, center */}
+                  <Text style={styles.loginText}>{loading ? 'Login' : 'Login'}</Text>
+                  {/* Yellow flower: top right, overlap the "n"/star */}
+                  <Image source={require('../assets/images/flower-asset-5.png')} style={styles.flowerRight} />
+                </View>
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
+  fullScreenContainer: {
+    flex: 1,
+    backgroundColor: '#D7FFED',
+  },
+  safeAreaContent: {
+    flex: 1,
+  },
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'android' ? ((StatusBar.currentHeight ?? 0) + 10) : 18,
+    left: 18,
+    zIndex: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    color: '#E37302',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 4,
+  },
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255,255,255,0.24)',
-  },
-  cardWrapper: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
   },
   card: {
     width: 333,
-    paddingVertical: 40,
-    paddingHorizontal: 44,
+    height: 521,
     borderRadius: 39,
-    shadowColor: '#E37302',
-    shadowOffset: { width: 24, height: 47 },
-    shadowOpacity: 0.62,
-    shadowRadius: 41.6,
-    elevation: 12,
-    backgroundColor: 'transparent',
     alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    justifyContent: 'flex-start',
   },
-  logo: { width: 155, height: 155, alignSelf: 'center' },
-  wordmark: { width: 226, height: 124, alignSelf: 'center', marginTop: -10 },
+  logoIcon: {
+    width: 155,
+    height: 155,
+    padding: 0,
+    resizeMode: 'contain',
+    marginBottom: -50,
+  },
+  logoText: {
+    width: 226,
+    height: 120,
+    resizeMode: 'contain',
+    marginBottom: 20,
+  },
   input: {
-    width: '90%',
-    alignSelf: 'center',
-    height: 54,
-    backgroundColor: '#EAFFEB',
+    width: 249,
+    height: 44,
     borderWidth: 1,
     borderColor: '#E37302',
+    backgroundColor: '#EAFFEB',
     borderRadius: 13,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     fontFamily: 'LilitaOne',
-    fontSize: 16,
+    fontSize: 14,
     color: '#E37302',
-    marginTop: 20,
+    marginVertical: 10,
+    textAlign: 'left',
+    fontWeight: '400',
   },
-  loginButtonRow: {
-    width: '100%',
+  loginButton: {
+    width: 120,
+    height: 42,
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
-    marginTop: 24,
-    marginBottom: 0,
-    height: 60,
-  },
-  button: {
     alignSelf: 'center',
-    zIndex: 2,
+    marginTop: 24,
     backgroundColor: 'transparent',
-    position: 'relative',
-    minWidth: 120,
-    minHeight: 48,
+    borderWidth: 0,
+  },
+  loginTextContainer: {
+    width: 101,
+    height: 42,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
-  buttonText: {
-    fontFamily: 'LilitaOne',
-    fontSize: 36,
-    color: '#00695c',
-    fontWeight: 'bold',
-    letterSpacing: 2,
-    textShadowColor: '#fff',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-    paddingHorizontal: 16,
-    borderWidth: 3,
-    borderColor: '#EAFFF6',
-  },
-  flower: {
-    position: 'absolute',
-    right: -24,
-    top: -10,
-    width: 29,
-    height: 29,
-    zIndex: 3,
+  loginText: {
+    fontFamily: 'Lemon',
+    fontSize: 32,
+    color: '#0C6366',
+    textShadowColor: '#EAFFF6',
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 1,
+    zIndex: 2,
   },
   flowerLeft: {
     position: 'absolute',
-    left: -28,
-    bottom: -12,
-    width: 32,
-    height: 32,
+    left: -14,
+    bottom: 0,
+    width: 19,
+    height: 19,
+    resizeMode: 'contain',
+    zIndex: 1,
+  },
+  flowerRight: {
+    position: 'absolute',
+    right: -25,
+    top: 3,
+    width: 29,
+    height: 29,
+    resizeMode: 'contain',
     zIndex: 3,
   },
-  error: { color: 'red', marginTop: 12, alignSelf: 'center' },
+  error: {
+    color: 'red',
+    marginTop: 10,
+  },
 });

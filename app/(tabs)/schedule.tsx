@@ -84,11 +84,11 @@ export default function ScheduleScreen() {
 
   return (
     <LinearGradient
-      colors={['#c7efe6', '#f18e21']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.bg}
-    >
+            colors={['#D7FFED', '#E37302']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFillObject}
+          >
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         {/* title shi */}
         <View style={styles.titleRow}>
