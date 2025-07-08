@@ -2,14 +2,7 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-
-// import { signIn, signOut } from 'aws-amplify/auth';
-// import { auth } from '@/amplify/auth/resource';
-// import { Auth } from 'aws-amplify';
-
-//zWLjsZrH6<6wYe!wQru5jJxa>JSlyw9GYerTVh?>4@p2ohUZdGWY.?GH!R-gjB
-
-// import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -21,11 +14,16 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!username.trim() || !password.trim()) {
+      setError('Please enter both username and password.');
+      return;
+    }
+
     setLoading(true);
     setError('');
+    
     try {
       await login(username, password);
-      router.replace('/');
     } catch (err) {
       if (typeof err === 'object' && err !== null && 'challenge' in err) {
         if ((err as { challenge: string }).challenge === 'NEW_PASSWORD_REQUIRED') {
@@ -34,7 +32,8 @@ export default function LoginScreen() {
         }
       } else {
         console.error('Login failed', err);
-        setError('Invalid username or password.');
+        const errorMessage = err instanceof Error ? err.message : 'Invalid username or password.';
+        setError(errorMessage);
       }
     } finally {
       setLoading(false);
@@ -42,33 +41,37 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+    <ProtectedRoute requireAuth={false} redirectWhenLoggedIn="/">
+      <View style={styles.container}>
+        <Text style={styles.title}>Login</Text>
 
-      <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-        style={styles.input}
-      />
+        <TextInput
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          style={styles.input}
+          editable={!loading}
+        />
 
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+          editable={!loading}
+        />
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <Button
-        title={loading ? 'Logging in...' : 'Login'}
-        onPress={handleLogin}
-        disabled={loading}
-      />
-    </View>
+        <Button
+          title={loading ? 'Logging in...' : 'Login'}
+          onPress={handleLogin}
+          disabled={loading}
+        />
+      </View>
+    </ProtectedRoute>
   );
 }
 
