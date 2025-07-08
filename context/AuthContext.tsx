@@ -110,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (username: string, password: string) => {
     return new Promise<void>(async (resolve, reject) => {
       try {
+        // await signOut();
         const { isSignedIn, nextStep } = await signIn({username, password});
         if (isSignedIn) {
           const session = await fetchAuthSession();

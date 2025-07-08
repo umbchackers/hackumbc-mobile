@@ -1,10 +1,15 @@
 import '@expo/metro-runtime';
 import { Stack } from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import LogoutButton from '@/components/LogoutButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, StatusBar, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from 'expo-font';
+import { BlurView } from 'expo-blur';
+
 import '@/amplify.config';
 import 'react-native-get-random-values';
-import { View, ActivityIndicator, Text } from 'react-native';
-import { BlurView } from 'expo-blur';
 
 function AuthLoadingWrapper({ children }: { children: React.ReactNode }) {
   const { isInitializing } = useAuth();
@@ -57,15 +62,37 @@ function AuthLoadingWrapper({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+
+  //fonts
+const [fontsLoaded] = useFonts({
+    'LilitaOne': require('../assets/fonts/LilitaOne-Regular.ttf'),
+    'Lemon': require('../assets/fonts/Lemon-Regular.ttf'),
+  });
+if (!fontsLoaded) {
+    return null; // or a loading indicator maybe idk
+}
   return (
-    <AuthProvider>
-      <AuthLoadingWrapper>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="newpassword" options={{ headerShown: false }} />
-        </Stack>
-      </AuthLoadingWrapper>
-    </AuthProvider>
+    // This View now serves as the canvas for the universal background gradient.
+    <View style={{ flex: 1 }}>
+      
+      <LinearGradient
+        colors={['#D7FFED', '#E37302']} // Your desired app-wide gradient colors
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFillObject} 
+      />
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+        <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+        <AuthProvider>
+          <AuthLoadingWrapper>
+            <Stack>
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+            <LogoutButton />
+          </AuthLoadingWrapper>
+        </AuthProvider>
+      </SafeAreaView>
+    </View>
   );
 }
