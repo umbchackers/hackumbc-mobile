@@ -1,97 +1,54 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import AsyncStorage  from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import {
   fetchAuthSession,
   signIn,
   signOut,
   confirmSignIn
 } from 'aws-amplify/auth';
-import { AuthContextType, UserRole, UserState } from '@/types';
-import { serializeRoles, deserializeRoles } from '@/lib/util';
+
+interface AuthContextType {
+  loggedIn: boolean;
+  role: string | null;
+  idToken: string | null;
+  accessToken: string | null;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => void;
+  completeNewPassword: (newPassword: string) => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState({
-    loggedIn: false,
-    roles: null,
-    idToken: null,
-    accessToken: null,
-  } as UserState);
+  const [user, setUser] = useState({ loggedIn: false, role: null as string | null, idToken: null as string | null, accessToken: null as string | null });
   const [tokenExpiry, setTokenExpiry] = useState<Date | null>(null);
   const [challengeData, setChallengeData] = useState<any | null>(null);
-  const [isInitializing, setIsInitializing] = useState<boolean>(true);
-
-  const clearStoredAuth = async () => {
-    try {
-      await SecureStore.deleteItemAsync('idToken');
-      await SecureStore.deleteItemAsync('accessToken');
-      await SecureStore.deleteItemAsync('userRoles');
-      
-      setUser({ loggedIn: false, roles: null, idToken: null, accessToken: null });
-      setTokenExpiry(null);
-    } catch (error) {
-      console.error('Error clearing stored auth:', error);
-    }
-  };
 
   useEffect(() => {
-    const validateAndLoadSession = async () => {
-      try {
-        setIsInitializing(true);
-        
-        const storedIdToken = await SecureStore.getItemAsync('idToken');
-        const storedAccessToken = await SecureStore.getItemAsync('accessToken');
-        const storedRolesString = await SecureStore.getItemAsync('userRoles');
-        
-        if (!storedAccessToken || !storedIdToken) {
-          console.log('No stored tokens found');
-          setIsInitializing(false);
-          return;
-        }
+    const loadStoredToken = async () => {
+      let storedIdToken;
+      let storedAccessToken;
+      if (Platform.OS === 'web') {
+        storedIdToken = await AsyncStorage.getItem('idToken');
+        storedAccessToken = await AsyncStorage.getItem('accessToken');
+      }
+      else {
+        storedIdToken = await SecureStore.getItemAsync('idToken');
+        storedAccessToken = await SecureStore.getItemAsync('accessToken');
+      }
 
+      if (storedAccessToken) {
         const session = await fetchAuthSession();
-        
-        if (!session.tokens?.accessToken || !session.tokens?.idToken) {
-          console.log('No valid Amplify session found, clearing stored data');
-          await clearStoredAuth();
-          setIsInitializing(false);
-          return;
-        }
-
-        const currentTime = Math.floor(Date.now() / 1000);
-        const tokenExp = session.tokens.accessToken.payload.exp!;
-        
-        if (tokenExp <= currentTime) {
-          console.log('Token is expired, clearing stored data');
-          await clearStoredAuth();
-          setIsInitializing(false);
-          return;
-        }
-
-        const storedRoles = storedRolesString ? deserializeRoles(storedRolesString) : null;
-        const expiresIn = tokenExp - currentTime;
+        const expiresIn = session.tokens?.accessToken.payload.exp! - Math.floor(Date.now() / 1000);
         const expiryDate = new Date(Date.now() + expiresIn * 1000);
 
-        setUser({
-          loggedIn: true,
-          roles: storedRoles,
-          idToken: storedIdToken,
-          accessToken: storedAccessToken
-        } as UserState);
+        setUser({ loggedIn: true, role: 'admin', idToken: storedIdToken, accessToken: storedAccessToken });
         setTokenExpiry(expiryDate);
-        
-        console.log('Session restored successfully');
-        
-      } catch (error) {
-        console.error('Error validating session:', error);
-        await clearStoredAuth();
-      } finally {
-        setIsInitializing(false);
-      }
-    };
-
-    validateAndLoadSession();
+      } 
+    }
+    loadStoredToken();
   }, []);
 
   useEffect(() => {
@@ -118,13 +75,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const accessToken = session.tokens?.accessToken?.toString()!;
           const expiresIn = session.tokens?.accessToken.payload.exp! - Math.floor(Date.now() / 1000);
           const expiryDate = new Date(Date.now() + expiresIn * 1000);
-          const userRoles = session.tokens?.idToken?.payload['cognito:groups'] as UserRole[];
-
-          await SecureStore.setItemAsync('idToken', idToken);
-          await SecureStore.setItemAsync('accessToken', accessToken);
-          await SecureStore.setItemAsync('userRoles', serializeRoles(userRoles));
-
-          setUser({loggedIn: true, roles: userRoles, idToken, accessToken });
+          
+          if (Platform.OS === 'web') {
+            await AsyncStorage.setItem('idToken', idToken);
+            await AsyncStorage.setItem('accessToken', accessToken);
+          }
+          else {
+            await SecureStore.setItemAsync('idToken', idToken);
+            await SecureStore.setItemAsync('accessToken', accessToken);
+          }
+          // TODO implement roles with Cognito user groups
+          setUser({ loggedIn: true, role: 'admin', idToken, accessToken });
           setTokenExpiry(expiryDate);
           console.log('Cognito login success');
           resolve();
@@ -136,7 +97,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         else {
           console.log('Login failed');
           console.log(nextStep);
-          reject();
         }
       }
       catch (err: any) {
@@ -156,13 +116,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const accessToken = session.tokens?.accessToken?.toString()!;
         const expiresIn = session.tokens?.accessToken.payload.exp! - Math.floor(Date.now() / 1000);
         const expiryDate = new Date(Date.now() + expiresIn * 1000);
-        const userRoles = session.tokens?.idToken?.payload['cognito:groups'] as UserRole[];
+        
+        if (Platform.OS === 'web') {
+          await AsyncStorage.setItem('idToken', idToken);
+          await AsyncStorage.setItem('accessToken', accessToken);
+        }
+        else {
+          await SecureStore.setItemAsync('idToken', idToken);
+          await SecureStore.setItemAsync('accessToken', accessToken);
+        }
 
-        await SecureStore.setItemAsync('idToken', idToken);
-        await SecureStore.setItemAsync('accessToken', accessToken);
-        await SecureStore.setItemAsync('userRoles', serializeRoles(userRoles));
-
-        setUser({ loggedIn: true, roles: userRoles, idToken, accessToken });
+        setUser({ loggedIn: true, role: 'admin', idToken, accessToken });
         setTokenExpiry(expiryDate);
         setChallengeData(null);
         resolve();
@@ -174,19 +138,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    try {
-      await signOut();
-      console.log('Amplify signOut successful');
-    } catch (error) {
-      console.error('Error during Amplify signOut:', error);
-    }
+    await signOut();
     
-    await clearStoredAuth();
-    console.log('Logout completed');
+    if (Platform.OS === 'web') {
+      await AsyncStorage.removeItem('idToken');
+      await AsyncStorage.removeItem('accessToken');
+    }
+    else {
+      await SecureStore.deleteItemAsync('idToken');
+      await SecureStore.deleteItemAsync('accessToken');
+    }
+    setUser({ loggedIn: false, role: null, idToken: null, accessToken: null });
+    setTokenExpiry(null);
   };
 
   return (
-    <AuthContext.Provider value={{ ...user, isInitializing, login, logout, completeNewPassword }}>
+    <AuthContext.Provider value={{ ...user, login, logout, completeNewPassword }}>
       {children}
     </AuthContext.Provider>
   );
