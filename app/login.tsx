@@ -3,29 +3,30 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 
-// import { signIn, signOut } from 'aws-amplify/auth';
-// import { auth } from '@/amplify/auth/resource';
-// import { Auth } from 'aws-amplify';
-
-//zWLjsZrH6<6wYe!wQru5jJxa>JSlyw9GYerTVh?>4@p2ohUZdGWY.?GH!R-gjB
-
-// import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
-
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, loggedIn, isInitializing } = useAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  if (isInitializing || loggedIn) {
+    return null;
+  }
+
   const handleLogin = async () => {
+    if (!username.trim() || !password.trim()) {
+      setError('Please enter both username and password.');
+      return;
+    }
+
     setLoading(true);
     setError('');
+    
     try {
       await login(username, password);
-      router.replace('/');
     } catch (err) {
       if (typeof err === 'object' && err !== null && 'challenge' in err) {
         if ((err as { challenge: string }).challenge === 'NEW_PASSWORD_REQUIRED') {
@@ -34,7 +35,8 @@ export default function LoginScreen() {
         }
       } else {
         console.error('Login failed', err);
-        setError('Invalid username or password.');
+        const errorMessage = err instanceof Error ? err.message : 'Invalid username or password.';
+        setError(errorMessage);
       }
     } finally {
       setLoading(false);
@@ -51,6 +53,7 @@ export default function LoginScreen() {
         onChangeText={setUsername}
         autoCapitalize="none"
         style={styles.input}
+        editable={!loading}
       />
 
       <TextInput
@@ -59,6 +62,7 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
+        editable={!loading}
       />
 
       {error ? <Text style={styles.error}>{error}</Text> : null}

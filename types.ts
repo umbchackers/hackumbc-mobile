@@ -12,13 +12,14 @@ export interface QrPayload {
     sig: string;
 }
 
-export type UserRole = 'admin' | 'participant' | null;
+export type UserRole = 'admin' | 'participant';
 
 export interface AuthContextType {
   loggedIn: boolean;
   roles: UserRole[] | null;
   idToken: string | null;
   accessToken: string | null;
+  isInitializing: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   completeNewPassword: (newPassword: string) => Promise<void>;
