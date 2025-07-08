@@ -1,40 +1,76 @@
-import { Tabs } from 'expo-router';
+import { RelativePathString, Tabs } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from 'react-native';
+import { UserRole } from '@/types';
+import { validateRoles } from '@/lib/util';
+
+interface TabConfig {
+  name: string;
+  title: string;
+  allowedRoles?: UserRole[];
+  showLogout?: boolean;
+}
 
 export default function TabsLayout() {
-  const { role, logout } = useAuth();
+  const { roles, logout, loggedIn, isInitializing } = useAuth();
+
+  if (isInitializing) {
+    return null;
+  }
+
+  const tabConfigs: TabConfig[] = [
+    {
+      name: 'index',
+      title: 'Home',
+      showLogout: true,
+    },
+    {
+      name: 'schedule',
+      title: 'Schedule',
+    },
+    {
+      name: 'scan',
+      title: 'Scan',
+      allowedRoles: ['admin'],
+    },
+  ];
+
+  const shouldShowTab = (tabConfig: TabConfig): boolean => {
+    if (!tabConfig.allowedRoles) {
+      return true;
+    }
+
+    if (!loggedIn || !roles) {
+      return false;
+    }
+
+    return validateRoles(tabConfig.allowedRoles, roles);
+  };
+
+  const getTabHref = (tabConfig: TabConfig): string | null => {
+    if (!shouldShowTab(tabConfig)) {
+      return null;
+    }
+    
+    return undefined as any;
+  };
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: { display: 'none' },
-      }}
-    >
-      <Tabs.Screen
-        name="index" 
-        options={{
-            title: 'Home',
-            headerRight: () => role === 'admin' && <Button title="Logout" onPress={logout} />,
-        }} 
-      />
-      <Tabs.Screen
-        name="schedule" 
-        options={{
-            title: 'Schedule',
-            headerRight: () => role === 'admin' && <Button title="Logout" onPress={logout} />,
-        }} 
-      />
-      <Tabs.Screen
-        name="scan" 
-        options={{
-            title: 'Scan',
-            href: role === 'admin' ? '/scan' : null,
-            headerRight: () => role === 'admin' && <Button title="Logout" onPress={logout} />,
-        }} 
-      />
-
+    <Tabs>
+      {tabConfigs.map((tabConfig) => (
+        <Tabs.Screen
+          key={tabConfig.name}
+          name={tabConfig.name}
+          options={{
+            title: tabConfig.title,
+            href: getTabHref(tabConfig) as RelativePathString,
+            headerRight: () => 
+              loggedIn && tabConfig.showLogout ? (
+                <Button title="Logout" onPress={logout} />
+              ) : null,
+          }}
+        />
+      ))}
     </Tabs>
   );
 }

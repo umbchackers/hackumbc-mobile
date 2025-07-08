@@ -4,6 +4,8 @@ import BottomNav from '@/components/BottomNav';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen() {
+  const { loggedIn } = useAuth();
+  const router = useRouter();
   const openWebsite = () => {
     Linking.openURL('https://hackumbc.tech');
   };
@@ -48,6 +50,7 @@ export default function HomeScreen() {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
               >
+                {!loggedIn && <Button title="Go to Login" onPress={() => router.push('/login')} />}
                 <Text style={styles.sectionTitle}>Welcome to hackUMBC 2025! 🚀</Text>
                 <Text style={styles.welcomeText}>
                   Get ready for an amazing weekend of innovation, collaboration, and coding! 
