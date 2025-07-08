@@ -2,24 +2,16 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 
 export default function NewPasswordScreen() {
   const router = useRouter();
-  const { completeNewPassword, loggedIn, isInitializing } = useAuth();
+  const { completeNewPassword } = useAuth();
 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  if (isInitializing) {
-    return null;
-  }
-
-  if (loggedIn) {
-    router.replace('/');
-    return null;
-  }
 
   const validatePassword = (password: string): string | null => {
     if (!password.trim()) {
@@ -68,44 +60,46 @@ export default function NewPasswordScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Set New Password</Text>
-      <Text style={styles.subtitle}>
-        Your account requires a new password. Please create a secure password.
-      </Text>
-
-      <TextInput
-        placeholder="New Password"
-        secureTextEntry
-        value={newPassword}
-        onChangeText={setNewPassword}
-        style={styles.input}
-        editable={!loading}
-      />
-
-      <TextInput
-        placeholder="Confirm New Password"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        style={styles.input}
-        editable={!loading}
-      />
-
-      <View style={styles.info}>
-        <Text style={styles.infoText}>
-          Password must meet your organization's security requirements.
+    <ProtectedRoute requireAuth={false} redirectWhenLoggedIn="/">
+      <View style={styles.container}>
+        <Text style={styles.title}>Set New Password</Text>
+        <Text style={styles.subtitle}>
+          Your account requires a new password. Please create a secure password.
         </Text>
+
+        <TextInput
+          placeholder="New Password"
+          secureTextEntry
+          value={newPassword}
+          onChangeText={setNewPassword}
+          style={styles.input}
+          editable={!loading}
+        />
+
+        <TextInput
+          placeholder="Confirm New Password"
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          style={styles.input}
+          editable={!loading}
+        />
+
+        <View style={styles.info}>
+          <Text style={styles.infoText}>
+            Password must meet your organization's security requirements.
+          </Text>
+        </View>
+
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <Button 
+          title={loading ? 'Updating Password...' : 'Set New Password'} 
+          onPress={handleSubmit} 
+          disabled={loading || !newPassword || !confirmPassword}
+        />
       </View>
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
-      <Button 
-        title={loading ? 'Updating Password...' : 'Set New Password'} 
-        onPress={handleSubmit} 
-        disabled={loading || !newPassword || !confirmPassword}
-      />
-    </View>
+    </ProtectedRoute>
   );
 }
 

@@ -2,19 +2,16 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, loggedIn, isInitializing } = useAuth();
+  const { login } = useAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  if (isInitializing || loggedIn) {
-    return null;
-  }
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
@@ -44,35 +41,37 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+    <ProtectedRoute requireAuth={false} redirectWhenLoggedIn="/">
+      <View style={styles.container}>
+        <Text style={styles.title}>Login</Text>
 
-      <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-        style={styles.input}
-        editable={!loading}
-      />
+        <TextInput
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          style={styles.input}
+          editable={!loading}
+        />
 
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-        editable={!loading}
-      />
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+          editable={!loading}
+        />
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <Button
-        title={loading ? 'Logging in...' : 'Login'}
-        onPress={handleLogin}
-        disabled={loading}
-      />
-    </View>
+        <Button
+          title={loading ? 'Logging in...' : 'Login'}
+          onPress={handleLogin}
+          disabled={loading}
+        />
+      </View>
+    </ProtectedRoute>
   );
 }
 

@@ -1,7 +1,6 @@
 import '@expo/metro-runtime';
 import { Stack } from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { AuthGuard } from '../components/AuthGuard';
 import '@/amplify.config';
 import 'react-native-get-random-values';
 import { View, ActivityIndicator, Text } from 'react-native';
@@ -61,13 +60,11 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <AuthLoadingWrapper>
-        <AuthGuard>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="newpassword" options={{ headerShown: false }} />
-          </Stack>
-        </AuthGuard>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="newpassword" options={{ headerShown: false }} />
+        </Stack>
       </AuthLoadingWrapper>
     </AuthProvider>
   );
