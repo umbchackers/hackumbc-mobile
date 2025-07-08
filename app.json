@@ -8,12 +8,6 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "fonts": [
-      {
-        "asset": "./assets/fonts/LilitaOne-Regular.ttf",
-        "family": "LilitaOne"
-      }
-    ],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
