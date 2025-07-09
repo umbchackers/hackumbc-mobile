@@ -5,39 +5,45 @@ import '@/amplify.config';
 import 'react-native-get-random-values';
 import LogoutButton from '@/components/LogoutButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
-export default function RootLayout() {
+import { ThemeProvider } from '@react-navigation/native';
+import { TransparentTheme } from '../lib/theme';
 
-  //fonts
-const [fontsLoaded] = useFonts({
+export default function RootLayout() {
+  // fonts
+  const [fontsLoaded] = useFonts({
     'LilitaOne': require('../assets/fonts/LilitaOne-Regular.ttf'),
     'Lemon': require('../assets/fonts/Lemon-Regular.ttf'),
   });
-if (!fontsLoaded) {
-    return null; // or a loading indicator maybe idk
-}
+  
+  if (!fontsLoaded) {
+    return null; 
+  }
+  
   return (
-    // This View now serves as the canvas for the universal background gradient.
-    <View style={{ flex: 1 }}>
-      
+    <ThemeProvider value={TransparentTheme}>
       <LinearGradient
-        colors={['#D7FFED', '#E37302']} // Your desired app-wide gradient colors
+        colors={['#D7FFED', '#E37302']} // app-wide gradient colors
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFillObject} 
-      />
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-        <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-        <AuthProvider>
-          <Stack>
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          </Stack>
-          <LogoutButton />
-        </AuthProvider>
-      </SafeAreaView>
-    </View>
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+          <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+          <AuthProvider>
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  headerShown: false,
+                }}
+              />
+            <LogoutButton />
+          </AuthProvider>
+        </SafeAreaView>
+      </LinearGradient>
+    </ThemeProvider>
   );
 }

@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, Image, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, Button } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { createApi } from '../../lib/api';
-import BottomNav from '@/components/BottomNav';
-import { LinearGradient } from 'expo-linear-gradient';
 import Scanner from '@/components/Scanner';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ScanScreen() {
   const { idToken } = useAuth();
@@ -34,55 +33,45 @@ export default function ScanScreen() {
   };
 
   return (
-    <LinearGradient
-            colors={['#D7FFED', '#E37302']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFillObject}
-          >
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-        <View style={{ flex: 1 }}>
-          <View style={styles.innerContent}>
-            <View style={styles.titleRow}>
-              <Image source={require('../../assets/images/flower-asset-3.png')} style={styles.flowerImgLeft} />
-              <Text style={styles.title}>QR CODE</Text>
-              <Image source={require('../../assets/images/flower-asset-5.png')} style={styles.flowerImgRight} />
-            </View>
-            <View style={styles.card}>
-              {/* user lookup UI */}
-              <Text style={styles.lookupTitle}>Scan - Get User Info</Text>
-              <TextInput
-                placeholder="Enter user email"
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                style={styles.input}
-              />
-              <Button
-                title={loading ? 'Looking up...' : 'Lookup User'}
-                onPress={handleLookup}
-                disabled={loading || email.length === 0}
-              />
-              {error && <Text style={styles.error}>{error}</Text>}
-              {userInfo && (
-                <View style={styles.userInfo}>
-                  <Text style={styles.userText}>Name: {userInfo.full_name}</Text>
-                  <Text style={styles.userText}>Age: {userInfo.age}</Text>
-                  <Button title="Reset" onPress={() => { setUserInfo(null); setError(null); setEmail(''); }} color="#b71c1c" />
-                </View>
-              )}
-              {/* sample image, replace later who cares */}
-              <Image source={require('../../assets/images/icon.png')} style={styles.qrSample} />
-              {/* scanner */}
-              <Scanner onScanned={unpackPayload} />
-              {/* tagline */}
-              <Text style={styles.tagline}>Scan In. Gear Up. Code On.</Text>
-            </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <View style={styles.innerContent}>
+          <View style={styles.titleRow}>
+            <Image source={require('../../assets/images/flower-asset-3.png')} style={styles.flowerImgLeft} />
+            <Text style={styles.title}>QR CODE</Text>
+            <Image source={require('../../assets/images/flower-asset-5.png')} style={styles.flowerImgRight} />
+          </View>
+          <View style={styles.card}>
+            {/* user lookup UI */}
+            <Text style={styles.lookupTitle}>Scan - Get User Info</Text>
+            <TextInput
+              placeholder="Enter user email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              style={styles.input}
+            />
+            <Button
+              title={loading ? 'Looking up...' : 'Lookup User'}
+              onPress={handleLookup}
+              disabled={loading || email.length === 0}
+            />
+            {error && <Text style={styles.error}>{error}</Text>}
+            {userInfo && (
+              <View style={styles.userInfo}>
+                <Text style={styles.userText}>Name: {userInfo.full_name}</Text>
+                <Text style={styles.userText}>Age: {userInfo.age}</Text>
+                <Button title="Reset" onPress={() => { setUserInfo(null); setError(null); setEmail(''); }} color="#b71c1c" />
+              </View>
+            )}
+            {/* sample image, replace later who cares */}
+            <Image source={require('../../assets/images/icon.png')} style={styles.qrSample} />
+            {/* scanner */}
+            <Scanner onScanned={unpackPayload} />
+            {/* tagline */}
+            <Text style={styles.tagline}>Scan In. Gear Up. Code On.</Text>
           </View>
         </View>
-        <BottomNav />
-      </SafeAreaView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 }
 
@@ -123,6 +112,7 @@ const styles = StyleSheet.create({
   card: {
     width: '90%',
     maxWidth: 400,
+    // keep backgroundColor for card contrast
     backgroundColor: 'rgba(255,255,255,0.7)',
     borderRadius: 32,
     alignItems: 'center',

@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Platform, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import BottomNav from '@/components/BottomNav';
 import { useAuth } from '../../context/AuthContext';
 import { createApi } from '../../lib/api';
 
@@ -25,7 +23,7 @@ export default function ScheduleScreen() {
   const [schedule, setSchedule] = useState<DaySchedule[]>([]);
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  {/* i commented this out because i want to test with mock data, but that never loads with this
+  
   useEffect(() => {
     (async () => {
       try {
@@ -38,58 +36,11 @@ export default function ScheduleScreen() {
       }
     })();
   }, []);
-  console.log(schedule);
-  */}
-  // For testing: add a bunch of mock events if schedule is empty
-  useEffect(() => {
-    if (schedule.length === 0) {
-      setSchedule([
-        {
-          day: 'Day 1',
-          activities: [
-            { time: '09:00 AM', activity: 'OPENING CEREMONY' },
-            { time: '10:00 AM', activity: 'WORKSHOP 1' },
-            { time: '11:00 AM', activity: 'WORKSHOP 2' },
-            { time: '12:00 PM', activity: 'LUNCH' },
-            { time: '01:00 PM', activity: 'TALK 1' },
-            { time: '02:00 PM', activity: 'TALK 2' },
-            { time: '03:00 PM', activity: 'WORKSHOP 3' },
-            { time: '04:00 PM', activity: 'TALK 3' },
-            { time: '05:00 PM', activity: 'DINNER' },
-            { time: '06:00 PM', activity: 'RELAXATION' },
-            { time: '07:00 PM', activity: 'CLOSING CEREMONY' },
-          ],
-        },
-        {
-          day: 'Day 2',
-          activities: [
-            { time: '09:00 AM', activity: 'DAY 2 EVENT 1' },
-            { time: '10:00 AM', activity: 'DAY 2 EVENT 2' },
-            { time: '11:00 AM', activity: 'DAY 2 EVENT 3' },
-            { time: '12:00 PM', activity: 'DAY 2 EVENT 4' },
-            { time: '01:00 PM', activity: 'DAY 2 EVENT 5' },
-            { time: '02:00 PM', activity: 'DAY 2 EVENT 6' },
-            { time: '03:00 PM', activity: 'DAY 2 EVENT 7' },
-            { time: '04:00 PM', activity: 'DAY 2 EVENT 8' },
-            { time: '05:00 PM', activity: 'DAY 2 EVENT 9' },
-            { time: '06:00 PM', activity: 'DAY 2 EVENT 10' },
-            { time: '07:00 PM', activity: 'DAY 2 EVENT 11' },
-          ],
-        },
-      ]);
-    }
-  }, [schedule.length]);
 
   const day = schedule[selected];
 
   return (
-    <LinearGradient
-            colors={['#D7FFED', '#E37302']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFillObject}
-          >
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+    <View style={styles.container}>
         {/* title shi */}
         <View style={styles.titleRow}>
           <Image source={require('../../assets/images/flower-asset-3.png')} style={styles.flowerImgLeft} />
@@ -134,7 +85,7 @@ export default function ScheduleScreen() {
               <Text style={styles.noData}>No schedule for this day</Text>
             )}
             {day && (
-              <ScrollView
+              <ScrollView // before you fucking fry i need scrollview so ts can scroll
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, paddingHorizontal: 8 }}
               >
@@ -164,19 +115,17 @@ export default function ScheduleScreen() {
             )}
           </LinearGradient>
         </View>
-      </SafeAreaView>
-      {/* footer nav */}
-      <View style={styles.footerWrap} pointerEvents="box-none">
-        <BottomNav currentPage="schedule" />
       </View>
-    </LinearGradient>
   );
 }
 
 // styling really needs to be improved but for now this is good enough
 const styles = StyleSheet.create({
-  bg: { flex: 1, width: '100%', height: '100%' },
-  safeArea: { flex: 1, width: '100%' },
+  container: { 
+    flex: 1, 
+    width: '100%', 
+    backgroundColor: 'transparent' 
+  },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',

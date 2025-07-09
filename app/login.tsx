@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Dimensions, Pressable, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -49,79 +49,64 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.fullScreenContainer}>
-      {/* Background Gradient - covers the entire screen */}
-      <LinearGradient
-        colors={['#D7FFED', '#E37302']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFillObject}
-      />
+    <SafeAreaView style={styles.safeAreaContent}>
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
 
-      {/* SafeAreaView to position content within safe areas */}
-      <SafeAreaView style={styles.safeAreaContent}>
-        <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
+      {/* button so u can go back to home, not (strand- not to be confused with the dark subclass)ed ts */}
+      <Pressable
+        style={styles.backButton}
+        onPress={() => router.replace('/')}
+      >
+        <Ionicons name="arrow-back" size={28} color="#E37302" />
+        <Text style={styles.backButtonText}>Home</Text>
+      </Pressable>
 
-        {/* button so u can go back to home, not (strand- not to be confused with the dark subclass)ed ts */}
-        <Pressable
-          style={styles.backButton}
-          onPress={() => router.replace('/')}
-        >
-          <Ionicons name="arrow-back" size={28} color="#E37302" />
-          <Text style={styles.backButtonText}>Home</Text>
-        </Pressable>
-
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          {/* Main content wrapper, centers the card */}
-          <View style={styles.centered}>
-            <LinearGradient
-              colors={['rgba(215,255,237,0.47)', 'rgba(244,255,234,0.47)']}
-              start={{ x: 0.07, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.card}
-            >
-              <Image source={require('../assets/images/hackumbcdog2025.png')} style={styles.logoIcon} />
-              <Image source={require('../assets/images/hacklogo2025.png')} style={styles.logoText} />
-              <TextInput
-                style={styles.input}
-                placeholder="USERNAME"
-                placeholderTextColor="#E37302"
-                value={username}
-                onChangeText={setUsername}
-                autoCapitalize="none"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="PASSWORD"
-                placeholderTextColor="#E37302"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-              {error ? <Text style={styles.error}>{error}</Text> : null}
-              <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
-                <View style={styles.loginTextContainer}>
-                  {/* Red flower: bottom left, overlap the "L" */}
-                  <Image source={require('../assets/images/flower-asset-3.png')} style={styles.flowerLeft} />
-                  {/* Login text, center */}
-                  <Text style={styles.loginText}>{loading ? 'Login' : 'Login'}</Text>
-                  {/* Yellow flower: top right, overlap the "n"/star */}
-                  <Image source={require('../assets/images/flower-asset-5.png')} style={styles.flowerRight} />
-                </View>
-              </TouchableOpacity>
-            </LinearGradient>
-          </View>
-        </TouchableWithoutFeedback>
-      </SafeAreaView>
-    </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        {/* Main content wrapper, centers the card */}
+        <View style={styles.centered}>
+          <LinearGradient
+            colors={['rgba(215,255,237,0.47)', 'rgba(244,255,234,0.47)']}
+            start={{ x: 0.07, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.card}
+          >
+            <Image source={require('../assets/images/hackumbcdog2025.png')} style={styles.logoIcon} />
+            <Image source={require('../assets/images/hacklogo2025.png')} style={styles.logoText} />
+            <TextInput
+              style={styles.input}
+              placeholder="USERNAME"
+              placeholderTextColor="#E37302"
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="PASSWORD"
+              placeholderTextColor="#E37302"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+              <View style={styles.loginTextContainer}>
+                {/* Red flower: bottom left, overlap the "L" */}
+                <Image source={require('../assets/images/flower-asset-3.png')} style={styles.flowerLeft} />
+                {/* Login text, center */}
+                <Text style={styles.loginText}>{loading ? 'Login' : 'Login'}</Text>
+                {/* Yellow flower: top right, overlap the "n"/star */}
+                <Image source={require('../assets/images/flower-asset-5.png')} style={styles.flowerRight} />
+              </View>
+            </TouchableOpacity>
+          </LinearGradient>
+        </View>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  fullScreenContainer: {
-    flex: 1,
-    backgroundColor: '#D7FFED',
-  },
   safeAreaContent: {
     flex: 1,
   },

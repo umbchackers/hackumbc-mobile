@@ -1,6 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Image, View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native';
-import BottomNav from '@/components/BottomNav';
+import { StyleSheet, Image, View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen() {
@@ -9,235 +8,226 @@ export default function HomeScreen() {
   };
 
   return (
-    <LinearGradient
-            colors={['#D7FFED', '#E37302']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFillObject}
-          >
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-          {/* header */}
-          <View style={styles.topRow}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* header, also unless u have a workaround for how view works i 
+        have scrollview cuz u have to scroll on the page to view everything*/}
+        <View style={styles.topRow}>
+          <Image
+            source={require('../../assets/images/hackumbcdog2025.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Image
+            source={require('../../assets/images/hacklogo2025.png')}
+            style={styles.wordmark}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* welcome section */}
+        <View style={styles.section}>
+          <View style={styles.flowerLeft}>
             <Image
-              source={require('../../assets/images/hackumbcdog2025.png')}
-              style={styles.logo}
+              source={require('../../assets/images/flower-asset-3.png')}
+              style={styles.flower}
               resizeMode="contain"
             />
+          </View>
+          <View style={styles.cardWrap}>
+            <LinearGradient
+              colors={['#e8f9e5', '#f6f8e0', '#fef7e1']}
+              style={styles.card}
+              locations={[0, 0.5, 1]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Text style={styles.sectionTitle}>Welcome to hackUMBC 2025! 🚀</Text>
+              <Text style={styles.welcomeText}>
+                Get ready for an amazing weekend of innovation, collaboration, and coding! 
+                This app is your gateway to everything hackUMBC.
+              </Text>
+            </LinearGradient>
+          </View>
+          <View style={styles.flowerRight}>
             <Image
-              source={require('../../assets/images/hacklogo2025.png')}
-              style={styles.wordmark}
+              source={require('../../assets/images/flower-asset-5.png')}
+              style={styles.flower}
               resizeMode="contain"
             />
           </View>
+        </View>
 
-          {/* welcome section */}
-          <View style={styles.section}>
-            <View style={styles.flowerLeft}>
-              <Image
-                source={require('../../assets/images/flower-asset-3.png')}
-                style={styles.flower}
-                resizeMode="contain"
-              />
-            </View>
-            <View style={styles.cardWrap}>
-              <LinearGradient
-                colors={['#e8f9e5', '#f6f8e0', '#fef7e1']}
-                style={styles.card}
-                locations={[0, 0.5, 1]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
-                <Text style={styles.sectionTitle}>Welcome to hackUMBC 2025! 🚀</Text>
-                <Text style={styles.welcomeText}>
-                  Get ready for an amazing weekend of innovation, collaboration, and coding! 
-                  This app is your gateway to everything hackUMBC.
-                </Text>
-              </LinearGradient>
-            </View>
-            <View style={styles.flowerRight}>
-              <Image
-                source={require('../../assets/images/flower-asset-5.png')}
-                style={styles.flower}
-                resizeMode="contain"
-              />
-            </View>
+        {/* about us section */}
+        <View style={styles.section}>
+          <View style={styles.flowerLeftBottom}>
+            <Image
+              source={require('../../assets/images/flower-asset-5.png')}
+              style={styles.flower}
+              resizeMode="contain"
+            />
           </View>
-
-          {/* about us section */}
-          <View style={styles.section}>
-            <View style={styles.flowerLeftBottom}>
-              <Image
-                source={require('../../assets/images/flower-asset-5.png')}
-                style={styles.flower}
-                resizeMode="contain"
-              />
-            </View>
-            <View style={styles.cardWrap}>
-              <LinearGradient
-                colors={['#e8f9e5', '#f6f8e0', '#fef7e1']}
-                style={styles.card}
-                locations={[0, 0.5, 1]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
-                <Text style={styles.sectionTitle}>About hackUMBC</Text>
-                <Text style={styles.bodyText}>
-                  hackUMBC is UMBC's only hackathon, bringing together students from all 
-                  backgrounds to create innovative solutions to real-world problems. Whether 
-                  you're a coding veteran or just starting your tech journey, there's a place 
-                  for you here!
-                </Text>
-              </LinearGradient>
-            </View>
-            <View style={styles.flowerRightTop}>
-              <Image
-                source={require('../../assets/images/flower-asset-3.png')}
-                style={styles.flower}
-                resizeMode="contain"
-              />
-            </View>
+          <View style={styles.cardWrap}>
+            <LinearGradient
+              colors={['#e8f9e5', '#f6f8e0', '#fef7e1']}
+              style={styles.card}
+              locations={[0, 0.5, 1]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Text style={styles.sectionTitle}>About hackUMBC</Text>
+              <Text style={styles.bodyText}>
+                hackUMBC is UMBC's only hackathon, bringing together students from all 
+                backgrounds to create innovative solutions to real-world problems. Whether 
+                you're a coding veteran or just starting your tech journey, there's a place 
+                for you here!
+              </Text>
+            </LinearGradient>
           </View>
-
-          {/* app features section */}
-          <View style={styles.section}>
-            <View style={styles.flowerLeft}>
-              <Image
-                source={require('../../assets/images/flower-asset-3.png')}
-                style={styles.flower}
-                resizeMode="contain"
-              />
-            </View>
-            <View style={styles.cardWrap}>
-              <LinearGradient
-                colors={['#e8f9e5', '#f6f8e0', '#fef7e1']}
-                style={styles.card}
-                locations={[0, 0.5, 1]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
-                <Text style={styles.sectionTitle}>What You Can Do</Text>
-                <View style={styles.featureContainer}>
-                  <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
-                    style={styles.feature}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                  >
-                    <Text style={styles.featureIcon}>📱</Text>
-                    <Text style={styles.featureTitle}>Check-In</Text>
-                    <Text style={styles.featureText}>Get checked in by having an organzier scan your QR code</Text>
-                  </LinearGradient>
-                  <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
-                    style={styles.feature}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                  >
-                    <Text style={styles.featureIcon}>📅</Text>
-                    <Text style={styles.featureTitle}>Schedule</Text>
-                    <Text style={styles.featureText}>View all events, workshops, and activities</Text>
-                  </LinearGradient>
-                  <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
-                    style={styles.feature}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                  >
-                    <Text style={styles.featureIcon}>🔍</Text>
-                    <Text style={styles.featureTitle}>Announcements</Text>
-                    <Text style={styles.featureText}>View live announcements from the hackUMBC team</Text>
-                  </LinearGradient>
-                </View>
-              </LinearGradient>
-            </View>
-            <View style={styles.flowerRight}>
-              <Image
-                source={require('../../assets/images/flower-asset-5.png')}
-                style={styles.flower}
-                resizeMode="contain"
-              />
-            </View>
+          <View style={styles.flowerRightTop}>
+            <Image
+              source={require('../../assets/images/flower-asset-3.png')}
+              style={styles.flower}
+              resizeMode="contain"
+            />
           </View>
+        </View>
 
-          {/* announcements section */}
-          <View style={styles.section}>
-            <View style={styles.flowerLeftBottom}>
-              <Image
-                source={require('../../assets/images/flower-asset-5.png')}
-                style={styles.flower}
-                resizeMode="contain"
-              />
-            </View>
-            <View style={styles.cardWrap}>
-              <LinearGradient
-                colors={['#e8f9e5', '#f6f8e0', '#fef7e1']}
-                style={styles.card}
-                locations={[0, 0.5, 1]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
-                <Text style={styles.sectionTitle}>Latest Updates</Text>
-                <View style={styles.announcementContainer}>
-                  <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
-                    style={styles.announcement}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                  >
-                    <Text style={styles.announcementTitle}>🎉 Registration Now Open!</Text>
-                    <Text style={styles.announcementText}>
-                      Sign up for hackUMBC 2025 is now live! Don't miss out on this incredible opportunity.
-                    </Text>
-                  </LinearGradient>
-                  <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
-                    style={styles.announcement}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                  >
-                    <Text style={styles.announcementTitle}>🏆 Amazing Prizes Announced</Text>
-                    <Text style={styles.announcementText}>
-                      Check out the incredible prizes worth over $10,000 for this year's winners!
-                    </Text>
-                  </LinearGradient>
-                  <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
-                    style={styles.announcement}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                  >
-                    <Text style={styles.announcementTitle}>📚 Workshop Schedule Released</Text>
-                    <Text style={styles.announcementText}>
-                      From AI/ML to web development, we've got workshops for every skill level.
-                    </Text>
-                  </LinearGradient>
-                </View>
-              </LinearGradient>
-            </View>
-            <View style={styles.flowerRightTop}>
-              <Image
-                source={require('../../assets/images/flower-asset-3.png')}
-                style={styles.flower}
-                resizeMode="contain"
-              />
-            </View>
+        {/* app features section */}
+        <View style={styles.section}>
+          <View style={styles.flowerLeft}>
+            <Image
+              source={require('../../assets/images/flower-asset-3.png')}
+              style={styles.flower}
+              resizeMode="contain"
+            />
           </View>
-
-          {/* website link */}
-          <View style={styles.section}>
-            <TouchableOpacity style={styles.websiteButton} onPress={openWebsite}>
-              <Text style={styles.websiteButtonText}>🌐 Visit Our Website!</Text>
-              <Text style={styles.websiteButtonSubtext}>hackumbc.tech</Text>
-            </TouchableOpacity>
+          <View style={styles.cardWrap}>
+            <LinearGradient
+              colors={['#e8f9e5', '#f6f8e0', '#fef7e1']}
+              style={styles.card}
+              locations={[0, 0.5, 1]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Text style={styles.sectionTitle}>What You Can Do</Text>
+              <View style={styles.featureContainer}>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
+                  style={styles.feature}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <Text style={styles.featureIcon}>📱</Text>
+                  <Text style={styles.featureTitle}>Check-In</Text>
+                  <Text style={styles.featureText}>Get checked in by having an organzier scan your QR code</Text>
+                </LinearGradient>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
+                  style={styles.feature}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <Text style={styles.featureIcon}>📅</Text>
+                  <Text style={styles.featureTitle}>Schedule</Text>
+                  <Text style={styles.featureText}>View all events, workshops, and activities</Text>
+                </LinearGradient>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
+                  style={styles.feature}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <Text style={styles.featureIcon}>🔍</Text>
+                  <Text style={styles.featureTitle}>Announcements</Text>
+                  <Text style={styles.featureText}>View live announcements from the hackUMBC team</Text>
+                </LinearGradient>
+              </View>
+            </LinearGradient>
           </View>
+          <View style={styles.flowerRight}>
+            <Image
+              source={require('../../assets/images/flower-asset-5.png')}
+              style={styles.flower}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
 
-          {/* bottom spacing */}
-          <View style={{ height: 100 }} />
-        </ScrollView>
-        <BottomNav />
-      </SafeAreaView>
-    </LinearGradient>
+        {/* announcements section */}
+        <View style={styles.section}>
+          <View style={styles.flowerLeftBottom}>
+            <Image
+              source={require('../../assets/images/flower-asset-5.png')}
+              style={styles.flower}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.cardWrap}>
+            <LinearGradient
+              colors={['#e8f9e5', '#f6f8e0', '#fef7e1']}
+              style={styles.card}
+              locations={[0, 0.5, 1]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Text style={styles.sectionTitle}>Latest Updates</Text>
+              <View style={styles.announcementContainer}>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
+                  style={styles.announcement}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <Text style={styles.announcementTitle}>🎉 Registration Now Open!</Text>
+                  <Text style={styles.announcementText}>
+                    Sign up for hackUMBC 2025 is now live! Don't miss out on this incredible opportunity.
+                  </Text>
+                </LinearGradient>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
+                  style={styles.announcement}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <Text style={styles.announcementTitle}>🏆 Amazing Prizes Announced</Text>
+                  <Text style={styles.announcementText}>
+                    Check out the incredible prizes worth over $10,000 for this year's winners!
+                  </Text>
+                </LinearGradient>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.9)', 'rgba(236, 254, 255, 0.9)']}
+                  style={styles.announcement}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <Text style={styles.announcementTitle}>📚 Workshop Schedule Released</Text>
+                  <Text style={styles.announcementText}>
+                    From AI/ML to web development, we've got workshops for every skill level.
+                  </Text>
+                </LinearGradient>
+              </View>
+            </LinearGradient>
+          </View>
+          <View style={styles.flowerRightTop}>
+            <Image
+              source={require('../../assets/images/flower-asset-3.png')}
+              style={styles.flower}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
+
+        {/* website link */}
+        <View style={styles.section}>
+          <TouchableOpacity style={styles.websiteButton} onPress={openWebsite}>
+            <Text style={styles.websiteButtonText}>🌐 Visit Our Website!</Text>
+            <Text style={styles.websiteButtonSubtext}>hackumbc.tech</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* bottom spacing */}
+        <View style={{ height: 100 }} />
+      </ScrollView>
   );
 }
 
