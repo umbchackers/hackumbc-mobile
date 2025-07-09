@@ -33,15 +33,12 @@ export default function RootLayout() {
         <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
           <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
           <AuthProvider>
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(tabs)"
-                options={{
-                  headerShown: false,
-                }}
-              />
-            <LogoutButton />
-          </AuthProvider>
+          <Stack>
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+          <LogoutButton />
+        </AuthProvider>
         </SafeAreaView>
       </LinearGradient>
     </ThemeProvider>
