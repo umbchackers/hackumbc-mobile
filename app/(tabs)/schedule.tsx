@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 12,
+    marginTop: 50,
+    marginBottom: 16,
     justifyContent: 'center',
   },
   flowerImgLeft: {
