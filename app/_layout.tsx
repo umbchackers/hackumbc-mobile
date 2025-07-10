@@ -23,24 +23,24 @@ export default function RootLayout() {
   }
   
   return (
-    <ThemeProvider value={TransparentTheme}>
-      <LinearGradient
-        colors={['#D7FFED', '#E37302']} // app-wide gradient colors
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{ flex: 1 }}
-      >
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-          <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-          <AuthProvider>
-          <Stack>
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          </Stack>
-          <LogoutButton />
-        </AuthProvider>
-        </SafeAreaView>
-      </LinearGradient>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider value={TransparentTheme}>
+        <LinearGradient
+          colors={['#D7FFED', '#E37302']} // app-wide gradient colors
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1 }}
+        >
+          <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+            <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+            <Stack screenOptions={{ animation: 'slide_from_right' }}>
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+            <LogoutButton />
+          </SafeAreaView>
+        </LinearGradient>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }

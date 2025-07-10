@@ -1,78 +1,89 @@
-import { Tabs } from 'expo-router';
+import { RelativePathString, Tabs } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
-import { Button } from 'react-native';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, BackHandler, Platform } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { Feather, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Stack } from 'expo-router';
+import { ReactElement, useState, cloneElement } from 'react';
+
+interface NavItem {
+  key: string,
+  label: string,
+  icon: ReactElement,
+  route: string,
+  allowedRoles?: string[]
+}
 
 export default function TabsLayout() {
-  const { role, logout } = useAuth();
+  const { role, loggedIn } = useAuth();
   const router = useRouter();
   const path = usePathname();
+  const [active, setActive] = useState('home');
 
-  // determine active page
-  let active: 'schedule' | 'home' | 'scan' = 'home';
-  if (path === '/schedule') {
-    active = 'schedule';
-  } else if (path === '/scan') {
-    active = 'scan';
-  } else if (path === '/' || path === '' || path === '/home') {
-    active = 'home';
-  } else {
-    active = 'home'; // fallback to home
+  const navItems: NavItem[] = [
+    {
+      key: 'home',
+      label: 'HOME',
+      icon: <FontAwesome name="home" />,
+      route: '/'
+    },
+    {
+      key: 'schedule',
+      label: 'SCHEDULE',
+      icon: <Feather name="calendar" />,
+      route: '/schedule'
+    },
+    {
+      key: 'scan',
+      label: 'SCAN',
+      icon: <MaterialCommunityIcons name="qrcode-scan" />,
+      route: '/scan',
+      allowedRoles: ['admin']
+    }
+  ]
+
+  const visibleNavItems = navItems.filter(item => {
+    if (!item.allowedRoles) return true;
+    if (!loggedIn || !role) return false;
+    return item.allowedRoles.includes(role);
+  });
+
+  const handleNavPress = (route: string, key: string) => {
+    if (path === route) return; // avoid transition on clicking same page
+    setActive(key);
+    router.push(route as RelativePathString);
+  }
+
+  const Nav = () => {
+    return (
+      <View style={styles.container}>
+        {visibleNavItems.map((item: NavItem) => {
+          const isActive = active === item.key;
+          const iconColor = isActive ? '#b30000' : '#ff6b00';
+          const labelStyle = isActive ? styles.labelActive : styles.label;
+          return (
+            <Pressable
+              key={item.key}
+              onPress={() => handleNavPress(item.route, item.key)}
+              style={styles.btn}
+            >
+              {cloneElement(item.icon as ReactElement<{color: string, size: number}>, { color: iconColor, size: 28 })}
+              <Text style={[styles.label, labelStyle]}>{item.label}</Text>
+            </Pressable>
+          )
+        })}
+      </View>
+    )
   }
 
   return (
     <>
-      {/* tabs */}
-      <Tabs
-        screenOptions={() => ({
-          headerShown: false,
-          tabBarStyle: { display: 'none' },
-          contentStyle:{ backgroundColor: 'transparent' },
-        })}
-      >
-        <Tabs.Screen
-          name="index" 
-          options={{
-            title: 'Home',
-            headerRight: () => role === 'admin' && <Button title="Logout" onPress={logout} />, 
-          }} 
-        />
-        <Tabs.Screen
-          name="schedule" 
-          options={{
-            title: 'Schedule',
-            headerRight: () => role === 'admin' && <Button title="Logout" onPress={logout} />, 
-          }} 
-        />
-        <Tabs.Screen
-          name="scan" 
-          options={{
-            title: 'Scan',
-            href: role === 'admin' ? '/scan' : null,
-            headerRight: () => role === 'admin' && <Button title="Logout" onPress={logout} />, 
-          }} 
-        />
-      </Tabs>
-      
-      {/* inline bottom navigation */}
-      <View style={styles.container}>
-        <Pressable onPress={() => router.replace('/schedule')} style={styles.btn}>
-          <Feather name="calendar" size={28} color={active === 'schedule' ? '#b30000' : '#ff6b00'} />
-          <Text style={[styles.label, active === 'schedule' && styles.labelActive]}>SCHEDULE</Text>
-        </Pressable>
-        <Pressable onPress={() => router.replace('/')} style={styles.btn}>
-          <FontAwesome name="home" size={28} color={active === 'home' ? '#b30000' : '#ff6b00'} />
-          <Text style={[styles.label, active === 'home' && styles.labelActive]}>HOME</Text>
-        </Pressable>
-        {role === 'admin' && (
-          <Pressable onPress={() => router.replace('/scan')} style={styles.btn}>
-            <MaterialCommunityIcons name="qrcode-scan" size={28} color={active === 'scan' ? '#b30000' : '#ff6b00'} />
-            <Text style={[styles.label, active === 'scan' && styles.labelActive]}>QR CODE</Text>
-          </Pressable>
-        )}
-      </View>
+      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="schedule" />
+        <Stack.Screen name="scan" />
+      </Stack>
+      <Nav />
     </>
   );
 }
