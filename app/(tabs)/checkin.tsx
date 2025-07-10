@@ -1,6 +1,7 @@
 import {View, Text, StyleSheet, Dimensions, ActivityIndicator, Image} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState, useEffect } from 'react';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -38,57 +39,59 @@ export default function Checkin() {
     };
 
     return(
-        <View style={styles.outerContainer}>
-            <LinearGradient
-                // Background Linear Gradient
-                colors={['#94D2BD', '#E9D8A6', '#EE9B00']}
-                start={{ x: 0, y: 0 }} //top left
-                end={{ x: 1, y: 1 }} // bottom right
-                style={styles.outerGradient}
-            />
-            <View style={styles.qrcontainer}>
+        <ProtectedRoute allowedRoles={['admin', 'participant']}>
+            <View style={styles.outerContainer}>
                 <LinearGradient
-                    //qr container gradient
-                    colors={['#d7ffed', '#e9c58a']}
+                    // Background Linear Gradient
+                    colors={['#94D2BD', '#E9D8A6', '#EE9B00']}
                     start={{ x: 0, y: 0 }} //top left
                     end={{ x: 1, y: 1 }} // bottom right
-                    style={styles.innerGradient}
+                    style={styles.outerGradient}
                 />
-                
-                {/*
-                  Conditional rendering for QR code area:
-                  1. If loading, show spinner and loading text
-                  2. If error, show error message and retry option
-                  3. Otherwise, show the QR code image (or placeholder)
-                */}
-                {loading ? (
-                    // Show loading spinner while QR code is being fetched
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#005F73" />
-                        <Text style={styles.loadingText}>Loading QR Code...</Text>
-                    </View>
-                ) : error ? (
-                    // Show error message and retry button if there was an error
-                    <View style={styles.errorContainer}>
-                        <Text style={styles.errorText}>{error}</Text>
-                        <Text style={styles.retryText} onPress={fetchQrCode}>Tap to retry</Text>
-                    </View>
-                ) : (
-                    // Show the QR code image (or placeholder if qrCodeUrl is null)
-                    <Image
-                        source={qrCodeUrl ? { uri: qrCodeUrl } : require('../../assets/images/temp_qrcode.png')}
-                        style={styles.qrcode}
-                        resizeMode="contain"
-                        onError={() => {
-                            setError('QR code image failed to load');
-                        }}
+                <View style={styles.qrcontainer}>
+                    <LinearGradient
+                        //qr container gradient
+                        colors={['#d7ffed', '#e9c58a']}
+                        start={{ x: 0, y: 0 }} //top left
+                        end={{ x: 1, y: 1 }} // bottom right
+                        style={styles.innerGradient}
                     />
-                )}
-                <Text style={styles.text}>
-                    Scan in. Gear up. Code on.
-                </Text>
+                    
+                    {/*
+                    Conditional rendering for QR code area:
+                    1. If loading, show spinner and loading text
+                    2. If error, show error message and retry option
+                    3. Otherwise, show the QR code image (or placeholder)
+                    */}
+                    {loading ? (
+                        // Show loading spinner while QR code is being fetched
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" color="#005F73" />
+                            <Text style={styles.loadingText}>Loading QR Code...</Text>
+                        </View>
+                    ) : error ? (
+                        // Show error message and retry button if there was an error
+                        <View style={styles.errorContainer}>
+                            <Text style={styles.errorText}>{error}</Text>
+                            <Text style={styles.retryText} onPress={fetchQrCode}>Tap to retry</Text>
+                        </View>
+                    ) : (
+                        // Show the QR code image (or placeholder if qrCodeUrl is null)
+                        <Image
+                            source={qrCodeUrl ? { uri: qrCodeUrl } : require('../../assets/images/temp_qrcode.png')}
+                            style={styles.qrcode}
+                            resizeMode="contain"
+                            onError={() => {
+                                setError('QR code image failed to load');
+                            }}
+                        />
+                    )}
+                    <Text style={styles.text}>
+                        Scan in. Gear up. Code on.
+                    </Text>
+                </View>
             </View>
-        </View>
+        </ProtectedRoute>
     );
 }
 
