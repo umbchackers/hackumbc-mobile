@@ -1,5 +1,6 @@
-{
-  "expo": {
+const IS_DEV = process.env.APP_VARIANT === 'development';
+
+export default {
     "name": "hackUMBC",
     "slug": "hackumbc-mobile",
     "version": "1.0.0",
@@ -17,14 +18,14 @@
           "NSAllowsArbitraryLoads": true
         }
       },
-      "bundleIdentifier": "com.hackumbc.hackumbcmobile"
+      "bundleIdentifier": IS_DEV ? "com.hackumbc.hackumbcmobile.dev" : "com.hackumbc.hackumbcmobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.hackumbc.hackumbcmobile",
+      "package": IS_DEV ? "com.hackumbc.hackumbcmobile.dev" : "com.hackumbc.hackumbcmobile",
       "permissions": [
         "android.permission.CAMERA"
       ]
@@ -67,5 +68,4 @@
     "updates": {
       "url": "https://u.expo.dev/e5b769d4-1ca0-4519-a9e9-a59ad274f93a"
     }
-  }
 }
