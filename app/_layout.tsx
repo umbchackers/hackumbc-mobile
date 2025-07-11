@@ -1,8 +1,8 @@
 import '@expo/metro-runtime';
-import { Stack } from 'expo-router';
-import { AuthProvider, useAuth } from '../context/AuthContext';
 import '@/amplify.config';
 import 'react-native-get-random-values';
+import { Stack } from 'expo-router';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 import { View, ActivityIndicator, Text,StatusBar, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import LogoutButton from '@/components/LogoutButton';
@@ -11,6 +11,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import { ThemeProvider } from '@react-navigation/native';
 import { TransparentTheme } from '../lib/theme';
+import * as Updates from 'expo-updates';
+import { useEffect } from 'react';
 
 function AuthLoadingWrapper({ children }: { children: React.ReactNode }) {
   const { isInitializing } = useAuth();
@@ -72,6 +74,25 @@ export default function RootLayout() {
   if (!fontsLoaded) {
     return null; 
   }
+
+  async function checkForUpdates() {
+  try {
+    const update = await Updates.checkForUpdateAsync();
+    
+    if (update.isAvailable) {
+      await Updates.fetchUpdateAsync();
+      await Updates.reloadAsync();
+    }
+  } catch (error) {
+    console.log('Error checking for updates:', error);
+  }
+}
+
+useEffect(() => {
+  if (!__DEV__) {
+    checkForUpdates();
+  }
+}, []);
   
   return (
     <AuthProvider>
