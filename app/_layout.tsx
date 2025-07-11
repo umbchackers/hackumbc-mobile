@@ -65,6 +65,28 @@ function AuthLoadingWrapper({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  async function checkForUpdates() {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+      
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      }
+    } catch (error) {
+      console.log('Error checking for updates:', error);
+    }
+  }
+
+  useEffect(() => {
+    if (!__DEV__) {
+      checkForUpdates();
+    }
+    else {
+      console.log('Running in dev mode...');
+    }
+  }, []);
+
   // fonts
   const [fontsLoaded] = useFonts({
     'LilitaOne': require('../assets/fonts/LilitaOne-Regular.ttf'),
@@ -74,25 +96,6 @@ export default function RootLayout() {
   if (!fontsLoaded) {
     return null; 
   }
-
-  async function checkForUpdates() {
-  try {
-    const update = await Updates.checkForUpdateAsync();
-    
-    if (update.isAvailable) {
-      await Updates.fetchUpdateAsync();
-      await Updates.reloadAsync();
-    }
-  } catch (error) {
-    console.log('Error checking for updates:', error);
-  }
-}
-
-useEffect(() => {
-  if (!__DEV__) {
-    checkForUpdates();
-  }
-}, []);
   
   return (
     <AuthProvider>
