@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Platf
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../context/AuthContext';
 import { createApi } from '../../lib/api';
+import { useFonts } from 'expo-font';
 
 const { width } = Dimensions.get('window');
 
@@ -134,18 +135,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   flowerImgLeft: {
-    width: 32,
-    height: 32,
-    marginRight: 4,
-    marginTop: -10,
+    width: 15,
+    height: 15,
+    marginRight: -3,
+    marginTop: -16,
   },
   flowerImgRight: {
-    width: 32,
-    height: 32,
+    width: 29,
+    height: 29,
     marginLeft: 4,
-    marginTop: -10,
+    marginTop: -40,
   },
   title: {
+    fontFamily: 'LilitaOne',
     fontSize: 36,
     fontWeight: 'bold',
     color: '#00695c',
