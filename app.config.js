@@ -18,7 +18,8 @@ export default {
           "NSAllowsArbitraryLoads": true
         }
       },
-      "bundleIdentifier": IS_DEV ? "com.hackumbc.hackumbcmobile.dev" : "com.hackumbc.hackumbcmobile"
+      "bundleIdentifier": IS_DEV ? "com.hackumbc.hackumbcmobile.dev" : "com.hackumbc.hackumbcmobile",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +29,8 @@ export default {
       "package": IS_DEV ? "com.hackumbc.hackumbcmobile.dev" : "com.hackumbc.hackumbcmobile",
       "permissions": [
         "android.permission.CAMERA"
-      ]
+      ],
+      "versionCode": 1,
     },
     "web": {
       "bundler": "metro",

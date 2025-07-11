@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import '@/amplify.config';
 import 'react-native-get-random-values';
-import { View, ActivityIndicator, Text,StatusBar } from 'react-native';
+import { View, ActivityIndicator, Text,StatusBar, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import LogoutButton from '@/components/LogoutButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -85,7 +85,7 @@ export default function RootLayout() {
           >
             <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
               <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-              <Stack screenOptions={{ animation: 'slide_from_right' }}>
+              <Stack screenOptions={{ animation: Platform.OS === 'ios' ? 'ios_from_right' : 'fade' }}>
                 <Stack.Screen name="login" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               </Stack>
