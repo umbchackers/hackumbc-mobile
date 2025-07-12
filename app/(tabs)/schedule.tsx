@@ -143,8 +143,8 @@ const styles = StyleSheet.create({
   flowerImgRight: {
     width: 29,
     height: 29,
-    marginLeft: 4,
-    marginTop: -40,
+    marginLeft: -10,
+    marginTop: -30,
   },
   title: {
     fontFamily: 'LilitaOne',
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     color: '#00695c',
     letterSpacing: 2,
     textShadowColor: '#fff',
-    textShadowOffset: { width: 1, height: 1 },
+    textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 2,
   },
   daySwitch: { flexDirection: 'row', marginBottom: 16, justifyContent: 'center' },
@@ -165,8 +165,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.35)',
   },
   dayPillActive: { backgroundColor: '#fff' },
-  dayText: { fontWeight: 'bold', color: '#0c4b46', fontSize: 16 },
-  dayTextActive: { color: '#e95d2e' },
+  dayText: { fontWeight: 'bold', color: '#ed9c21', fontSize: 16, fontFamily: 'Lemon', textShadowColor: '#fff', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 2},
+  dayTextActive: { color: '#ad2115' },
   cardWrap: {
     width: '100%',
     alignItems: 'center',
