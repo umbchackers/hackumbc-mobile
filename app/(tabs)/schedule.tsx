@@ -132,7 +132,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 50,
     marginBottom: 16,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    marginStart: 16,
   },
   flowerImgLeft: {
     width: 15,
@@ -149,9 +150,9 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'LilitaOne',
     fontSize: 36,
-    fontWeight: 'bold',
+    /*Removed bold for the font to work*/
     color: '#00695c',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textShadowColor: '#fff',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 2,
