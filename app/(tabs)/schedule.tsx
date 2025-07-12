@@ -75,7 +75,7 @@ export default function ScheduleScreen() {
         {/* timeline card*/}
         <View style={styles.cardWrap}>
           <LinearGradient
-            colors={['#e8f9e5', '#f6f8e0', '#fef7e1']} // needs to be adjusted a bit, but for now this good
+            colors={['#e8f9e599', '#f6f8e599', '#fef7e599']} // needs to be adjusted a bit, but for now this good
             style={styles.card}
             locations={[0, 0.5, 1]}
             start={{ x: 0, y: 0 }}
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 18,
-    minHeight: 36,
+    minHeight: 96,
     width: '100%',
     justifyContent: 'space-between',
   },
@@ -204,11 +204,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(0,0,0,0.13)',
+    backgroundColor: '#E37302',
   },
   activity: {
     flex: 1.5,
-    fontWeight: 'bold',
+    fontFamily: 'Lemon',
+    /*Removed the bolding*/
     color: '#e95d2e',
     fontSize: 15,
     textTransform: 'uppercase',
@@ -229,20 +230,24 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   infoPill: {
+    height: 36,
+    width: 58,
     backgroundColor: '#fff',
     borderRadius: 12,
     paddingHorizontal: 14,
-    paddingVertical: 5,
+    paddingVertical: 9,
     shadowColor: '#000',
     shadowOpacity: 0.07,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
-    alignSelf: 'flex-end',
+    /* pill should be center */
+    alignSelf: 'center',
+    textAlignVertical: 'center'
   },
   infoText: {
-    fontWeight: 'bold',
     fontSize: 12,
     color: '#0c4b46',
+    textAlign: 'center',
   },
   error: { color: 'red', alignSelf: 'center', marginVertical: 20 },
   noData: { fontSize: 16, alignSelf: 'center', marginTop: 60 },
