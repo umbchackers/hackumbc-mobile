@@ -178,9 +178,9 @@ const styles = StyleSheet.create({
     width: '90%',
     maxWidth: 380,
     borderRadius: 32,
-    paddingTop: 32,
+    paddingTop: 20,
     paddingHorizontal: 20,
-    paddingBottom: 32,
+    paddingBottom: 20,
     marginBottom: 110, // so it doesnt overlap with bottom nav
     alignItems: 'stretch',
     justifyContent: 'flex-start',
