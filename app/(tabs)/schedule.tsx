@@ -225,6 +225,10 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginHorizontal: 6,
     backgroundColor: 'rgba(255,255,255,0.35)',
+    shadowColor: '#ad2115',
+    shadowOffset: { width: 15, height: 9 },
+    shadowOpacity: 0.6,
+    shadowRadius: 21,
   },
   dayPillActive: { backgroundColor: '#fff' },
   dayText: { 
