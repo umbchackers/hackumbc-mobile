@@ -141,33 +141,41 @@ export default function ScheduleScreen() {
           onRequestClose={() => setModalVisible(false)}
         >
           <View style={styles.popupbackground}>
-            <View style={styles.popupbox}>
+            
+              <LinearGradient
+                colors={['#e8f9e5', '#f6f8e5', '#fef7e5']} // dw I adjusted it to be less opaque 
+                style={styles.popupbox}
+                locations={[0, 0.5, 1]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                >
+                <Text style={styles.popuptext}>Activity Info</Text>
 
-              <Text style={styles.popuptext}>Activity Info</Text>
-
-              <Text style={styles.popupactivitytitle}>
-                {selectedActivity?.activity}
-              </Text>
-
-              <Text style={styles.popuptime}>
-                Time: {selectedActivity?.time}
-              </Text>
-
-              <ScrollView style={styles.popupdesc} showsVerticalScrollIndicator={false}>
-                <Text style={styles.popupdesctext}>
-                                
-                  {selectedActivity?.description/*Fu Fu saungwei */}
-
+                <Text style={styles.popupactivitytitle}>
+                  {selectedActivity?.activity}
                 </Text>
-              </ScrollView>
 
-              <TouchableOpacity
-                style={[styles.popupclose]}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.infoText}>Close</Text>
-              </TouchableOpacity>
-            </View>
+                <Text style={styles.popuptime}>
+                  Time: {selectedActivity?.time}
+                </Text>
+
+                <ScrollView style={styles.popupdesc} showsVerticalScrollIndicator={true}>
+                  <Text style={styles.popupdesctext}>
+                                  
+                    {selectedActivity?.description/*Fu Fu saungwei */}
+
+                  </Text>
+                </ScrollView>
+
+                <TouchableOpacity
+                  style={[styles.popupclose]}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.infoText}>Close</Text>
+                </TouchableOpacity>
+              </LinearGradient>
+
+
           </View>
         </Modal>
       </View>
@@ -337,7 +345,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffffff',
     padding: 24,
     borderRadius: 16,
-    minWidth: '80%',
+    minWidth: '90%',
     alignItems: 'center',
     width: 300,
   },
@@ -349,6 +357,7 @@ const styles = StyleSheet.create({
     textShadowColor: '#fff',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 2,
+    textAlign: 'center'
   },
   popupactivitytitle: {
     fontFamily: 'Lemon',
@@ -363,11 +372,12 @@ const styles = StyleSheet.create({
     color: '#0c4b46',
     padding: 0,
     marginBottom: 16,
+    textAlign: 'center'
   },
   popupclose: {
     height: 36,
     width: 60,
-    backgroundColor: '#e7e0e0ff',
+    backgroundColor: '#ffffffff',
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 9,
@@ -386,9 +396,10 @@ const styles = StyleSheet.create({
 
   },
   popupdesctext: {
-    backgroundColor: '#f8f0eaff',
+    //backgroundColor: '#f8f0eaff',
     padding: 10,
     borderRadius: 10,
     lineHeight: 20,
+    textAlign: 'center'
   }
 });
