@@ -12,6 +12,7 @@ const { width } = Dimensions.get('window');
 interface Activity {
   time: string;
   activity: string;
+  description: string
 }
 
 interface DaySchedule {
@@ -99,6 +100,7 @@ export default function ScheduleScreen() {
             {day && (
               <ScrollView // before you fucking fry i need scrollview so ts can scroll
                 showsVerticalScrollIndicator={false}
+                style={[{borderRadius: 20}]}
                 contentContainerStyle={{ paddingBottom: 0, paddingTop: 8, paddingHorizontal: 8 }}
               >
                 {day.activities.map((item, i) => (
@@ -151,22 +153,13 @@ export default function ScheduleScreen() {
                 Time: {selectedActivity?.time}
               </Text>
 
-  
-              <Text>
-                Hey, 宗旨利滚利
-                对应好运八方来
-                散了才能聚
-                你不出手？
-                说聊斋 (揽佬)
-                这一把直接合
-                因为我花钱交朋友 (哼)
-                艺高人胆大
-                揽佬小盲三条九
-                回馈一下社会先
-                摸到那顶皇冠后 (后)
-                找你做事人太多
-                事情两袖清风做
-              </Text>
+              <ScrollView style={styles.popupdesc} showsVerticalScrollIndicator={false}>
+                <Text style={styles.popupdesctext}>
+                                
+                  {selectedActivity?.description/*Fu Fu saungwei */}
+
+                </Text>
+              </ScrollView>
 
               <TouchableOpacity
                 style={[styles.popupclose]}
@@ -386,5 +379,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlignVertical: 'center',
     marginTop: 16
+  },
+  popupdesc: {
+    maxHeight: 200,
+    borderRadius: 10
+
+  },
+  popupdesctext: {
+    backgroundColor: '#f8f0eaff',
+    padding: 10,
+    borderRadius: 10,
+    lineHeight: 20,
   }
 });
