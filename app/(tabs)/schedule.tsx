@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Platform, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Platform, Image, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../context/AuthContext';
 import { createApi } from '../../lib/api';
 import { useFonts } from 'expo-font';
+import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const { width } = Dimensions.get('window');
 
@@ -39,8 +41,17 @@ export default function ScheduleScreen() {
   }, []);
 
   const day = schedule[selected];
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+
+  // Function to open the modal
+  function showInfoModal(activity: Activity) {
+    setSelectedActivity(activity);
+    setModalVisible(true);
+  }
 
   return (
+    
     <View style={styles.container}>
         {/* title shi */}
         <View style={styles.titleRow}>
@@ -75,7 +86,7 @@ export default function ScheduleScreen() {
         {/* timeline card*/}
         <View style={styles.cardWrap}>
           <LinearGradient
-            colors={['#e8f9e599', '#f6f8e599', '#fef7e599']} // needs to be adjusted a bit, but for now this good
+            colors={['#e8f9e599', '#f6f8e599', '#fef7e599']} // dw I adjusted it to be less opaque 
             style={styles.card}
             locations={[0, 0.5, 1]}
             start={{ x: 0, y: 0 }}
@@ -88,7 +99,7 @@ export default function ScheduleScreen() {
             {day && (
               <ScrollView // before you fucking fry i need scrollview so ts can scroll
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 32, paddingTop: 8, paddingHorizontal: 8 }}
+                contentContainerStyle={{ paddingBottom: 0, paddingTop: 8, paddingHorizontal: 8 }}
               >
                 {day.activities.map((item, i) => (
                   <View key={i} style={styles.row}>
@@ -107,15 +118,65 @@ export default function ScheduleScreen() {
                     >
                       {item.time.match(/am|pm|AM|PM/) ? item.time : `${item.time} AM`}
                     </Text>
-                    <TouchableOpacity style={styles.infoPill}>
+                    <TouchableOpacity
+                      style={styles.infoPill}
+                      onPress={() => showInfoModal(item)}
+                    >
                       <Text style={styles.infoText}>INFO</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> 
                   </View>
                 ))}
               </ScrollView>
             )}
           </LinearGradient>
         </View>
+
+        
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.popupbackground}>
+            <View style={styles.popupbox}>
+
+              <Text style={styles.popuptext}>Activity Info</Text>
+
+              <Text style={styles.popupactivitytitle}>
+                {selectedActivity?.activity}
+              </Text>
+
+              <Text style={styles.popuptime}>
+                Time: {selectedActivity?.time}
+              </Text>
+
+  
+              <Text>
+                Hey, 宗旨利滚利
+                对应好运八方来
+                散了才能聚
+                你不出手？
+                说聊斋 (揽佬)
+                这一把直接合
+                因为我花钱交朋友 (哼)
+                艺高人胆大
+                揽佬小盲三条九
+                回馈一下社会先
+                摸到那顶皇冠后 (后)
+                找你做事人太多
+                事情两袖清风做
+              </Text>
+
+              <TouchableOpacity
+                style={[styles.popupclose]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.infoText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
   );
 }
@@ -166,7 +227,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.35)',
   },
   dayPillActive: { backgroundColor: '#fff' },
-  dayText: { fontWeight: 'bold', color: '#ed9c21', fontSize: 16, fontFamily: 'Lemon', textShadowColor: '#fff', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 2},
+  dayText: { 
+    fontWeight: 'bold',
+    color: '#ed9c21',
+    fontSize: 16,
+    fontFamily: 'Lemon',
+    textShadowColor: '#fff',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 2
+  },
   dayTextActive: { color: '#ad2115' },
   cardWrap: {
     width: '100%',
@@ -261,4 +330,57 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     zIndex: 10,
   },
+  popupbackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)', // a lil opaque
+  },
+  popupbox: {
+    backgroundColor: '#ffffffff',
+    padding: 24,
+    borderRadius: 16,
+    minWidth: '80%',
+    alignItems: 'center',
+    width: 300,
+  },
+  popuptext: {
+    fontFamily: 'LilitaOne',
+    fontSize: 20,
+    color: '#00695c',
+    letterSpacing: 0.5,
+    textShadowColor: '#fff',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 2,
+  },
+  popupactivitytitle: {
+    fontFamily: 'Lemon',
+    color: '#e95d2e',
+    fontSize: 15,
+    textTransform: 'uppercase',
+    marginTop: 16,
+    textAlign: 'center'
+  },
+  popuptime: {
+    fontSize: 13, 
+    color: '#0c4b46',
+    padding: 0,
+    marginBottom: 16,
+  },
+  popupclose: {
+    height: 36,
+    width: 60,
+    backgroundColor: '#e7e0e0ff',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    shadowColor: '#000',
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    /* pill should be center */
+    alignSelf: 'center',
+    textAlignVertical: 'center',
+    marginTop: 16
+  }
 });
