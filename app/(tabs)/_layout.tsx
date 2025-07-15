@@ -25,7 +25,7 @@ export default function TabsLayout() {
   const navItems: NavItem[] = [
     {
       key: 'home',
-      label: 'HOME?',
+      label: 'HOME',
       icon: <FontAwesome name="home" />,
       route: '/'
     },
@@ -80,7 +80,7 @@ export default function TabsLayout() {
 
   return (
     <>
-      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+      <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="schedule" />
         <Stack.Screen name="scan" />

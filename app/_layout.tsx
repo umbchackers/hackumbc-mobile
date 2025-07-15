@@ -108,7 +108,7 @@ export default function RootLayout() {
           >
             <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
               <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-              <Stack screenOptions={{ animation: Platform.OS === 'ios' ? 'ios_from_right' : 'slide_from_right' }}>
+              <Stack screenOptions={{ animation: 'fade' }}>
                 <Stack.Screen name="login" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               </Stack>
