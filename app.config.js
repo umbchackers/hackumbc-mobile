@@ -66,9 +66,6 @@ export default {
       "policy": "sdkVersion"
     },
     "updates": {
-      "enabled": true,
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/e5b769d4-1ca0-4519-a9e9-a59ad274f93a"
     }
 }
