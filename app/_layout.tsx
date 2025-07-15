@@ -112,7 +112,7 @@ export default function RootLayout() {
                 screenOptions={{ 
                   headerShown: false,
                   animation: Platform.OS === 'ios' ? 'ios_from_right' : 'slide_from_right', 
-                  presentation: 'modal'
+                  presentation: 'card'
                 }}
               >
                 <Stack.Screen name="login" options={{ headerShown: false }} />

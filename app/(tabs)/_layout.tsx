@@ -84,7 +84,7 @@ export default function TabsLayout() {
         screenOptions={{ 
           headerShown: false,
           animation: Platform.OS === 'ios' ? 'ios_from_right' : 'slide_from_right', 
-          presentation: 'modal'
+          presentation: 'card'
         }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="schedule" />
