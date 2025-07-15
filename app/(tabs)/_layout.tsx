@@ -25,7 +25,7 @@ export default function TabsLayout() {
   const navItems: NavItem[] = [
     {
       key: 'home',
-      label: 'HOME',
+      label: 'HOME?',
       icon: <FontAwesome name="home" />,
       route: '/'
     },
