@@ -111,7 +111,10 @@ export default function RootLayout() {
               <Stack
                 screenOptions={{ 
                   headerShown: false,
-                  animation: Platform.OS === 'ios' ? 'ios_from_right' : 'slide_from_right', 
+                  animation: Platform.select({
+                    ios: 'ios_from_right',
+                    android: 'slide_from_right'
+                  }),
                   presentation: 'card'
                 }}
               >
