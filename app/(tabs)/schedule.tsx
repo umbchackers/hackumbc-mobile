@@ -23,8 +23,9 @@ const { width } = Dimensions.get("window");
 interface Activity {
   time: string;
   activity: string;
+  location: string; 
   description: string;
-  location?: string; // jus testing if we have an endpoint for this yet
+  
 }
 
 interface DaySchedule {
@@ -431,15 +432,14 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   popuptime: {
-    fontSize: 15,
+    fontSize: 13,
     color: "#0c4b46",
-    fontWeight: "600",
-    marginBottom: 8,
+    padding: 0,
+    marginBottom: 4,
     textAlign: "center",
-    zIndex: 1,
   },
   popuplocation: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#0c4b46",
     marginBottom: 16,
     textAlign: "center",
