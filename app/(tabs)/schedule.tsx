@@ -16,6 +16,7 @@ import { createApi } from "../../lib/api";
 import { useFonts } from "expo-font";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import { BlurView } from 'expo-blur';
 
 const { width } = Dimensions.get("window");
 
@@ -23,6 +24,7 @@ interface Activity {
   time: string;
   activity: string;
   description: string;
+  location?: string; // jus testing if we have an endpoint for this yet
 }
 
 interface DaySchedule {
@@ -156,39 +158,58 @@ export default function ScheduleScreen() {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.popupbackground}>
-          <LinearGradient
-            colors={["#e8f9e5", "#f6f8e5", "#fef7e5"]} // dw I adjusted it to be less opaque
-            style={styles.popupbox}
-            locations={[0, 0.5, 1]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-          >
-            <Text style={styles.popuptext}>Activity Info</Text>
+        <BlurView intensity={30} tint="dark" style={styles.blurContainer}>
+          <View style={styles.popupbackground}>
+            <View style={styles.popupbox}>
+              <LinearGradient
+                colors={["rgba(232, 249, 229, 0.7)", "rgba(237, 156, 33, 0.4)"]}
+                style={styles.glassGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              />
+              
+              <Text style={styles.popuptext}>Activity Info</Text>
 
-            <Text style={styles.popupactivitytitle}>
-              {selectedActivity?.activity}
-            </Text>
-
-            <Text style={styles.popuptime}>Time: {selectedActivity?.time}</Text>
-
-            <ScrollView
-              style={styles.popupdesc}
-              showsVerticalScrollIndicator={true}
-            >
-              <Text style={styles.popupdesctext}>
-                {selectedActivity?.description /*Fu Fu saungwei */}
+              <Text style={styles.popupactivitytitle}>
+                {selectedActivity?.activity}
               </Text>
-            </ScrollView>
 
-            <TouchableOpacity
-              style={[styles.popupclose]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.infoText}>Close</Text>
-            </TouchableOpacity>
-          </LinearGradient>
-        </View>
+              <Text style={styles.popuptime}>Time: {selectedActivity?.time}</Text>
+              
+              {selectedActivity?.location && (
+                <Text style={styles.popuplocation}>
+                  Location: {selectedActivity.location}
+                </Text>
+              )}
+
+              <View style={styles.descriptionCard}>
+                <ScrollView
+                  style={styles.popupdesc}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <Text style={styles.popupdesctext}>
+                    {selectedActivity?.description}
+                  </Text>
+                </ScrollView>
+              </View>
+
+              <TouchableOpacity
+                style={styles.popupclose}
+                onPress={() => setModalVisible(false)}
+              >
+                {/* <LinearGradient
+                  colors={["#e95d2e", "#ed9c21"]}
+                  style={styles.closeButtonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </LinearGradient> */}
+                 <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </BlurView>
       </Modal>
     </View>
   );
@@ -275,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
     justifyContent: "flex-start",
     shadowColor: "#000",
-    shadowOpacity: 0.13,
+    shadowOpacity: 0.1,
     shadowRadius: 15,
     shadowOffset: { width: 0, height: 10 },
     overflow: "hidden",
@@ -351,70 +372,131 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     zIndex: 10,
   },
+  // Glassmorphism modal styles
+  blurContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   popupbackground: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.3)", // a lil opaque
+    width: "100%",
   },
   popupbox: {
-    backgroundColor: "#ffffffff",
     padding: 24,
-    borderRadius: 16,
-    minWidth: "90%",
+    borderRadius: 24,
+    width: "85%",
+    maxWidth: 340,
     alignItems: "center",
-    width: 300,
+    overflow: "hidden",
+    position: "relative",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 10,
+  },
+  glassGradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    borderRadius: 24,
   },
   popuptext: {
     fontFamily: "LilitaOne",
-    fontSize: 20,
+    fontSize: 24,
     color: "#00695c",
     letterSpacing: 0.5,
-    textShadowColor: "#fff",
-    textShadowOffset: { width: 2, height: 2 },
+    marginBottom: 8,
+    textShadowColor: "rgba(255,255,255,0.6)",
+    textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-    textAlign: "center",
+    zIndex: 1,
   },
   popupactivitytitle: {
     fontFamily: "Lemon",
     color: "#e95d2e",
-    fontSize: 15,
+    fontSize: 16,
     textTransform: "uppercase",
-    marginTop: 16,
+    marginTop: 8,
+    marginBottom: 4,
     textAlign: "center",
+    zIndex: 1,
   },
   popuptime: {
-    fontSize: 13,
+    fontSize: 15,
     color: "#0c4b46",
-    padding: 0,
+    fontWeight: "600",
+    marginBottom: 8,
+    textAlign: "center",
+    zIndex: 1,
+  },
+  popuplocation: {
+    fontSize: 14,
+    color: "#0c4b46",
     marginBottom: 16,
+    textAlign: "center",
+    fontStyle: "italic",
+    zIndex: 1,
+  },
+  descriptionCard: {
+    backgroundColor: "rgba(255,255,255,0.45)",
+    borderRadius: 16,
+    padding: 12,
+    width: "100%",
+    backdropFilter: "blur(2px)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    marginBottom: 16,
+    zIndex: 1,
+  },
+  popupdesc: {
+    maxHeight: 180,
+    width: "100%",
+  },
+  popupdesctext: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: "#333",
     textAlign: "center",
   },
   popupclose: {
-    height: 36,
-    width: 60,
-    backgroundColor: "#ffffffff",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    shadowColor: "#000",
-    shadowOpacity: 0.07,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    /* pill should be center */
-    alignSelf: "center",
-    textAlignVertical: "center",
-    marginTop: 16,
+    width: 120,
+    height: 40,
+    borderRadius: 20,
+    overflow: "hidden",
+    marginTop: 8,
+    zIndex: 1,
+    backgroundColor: "transparent",
+    borderWidth: 3,
+    borderColor: "#00695c",
+    justifyContent: "center",
+    alignItems: "center",
+  
   },
-  popupdesc: {
-    maxHeight: 200,
-    borderRadius: 10,
+  closeButtonGradient: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
   },
-  popupdesctext: {
-    //backgroundColor: '#f8f0eaff',
-    padding: 10,
-    borderRadius: 10,
-    lineHeight: 20,
-    textAlign: "center",
+  closeButtonText: {
+    fontFamily: "Lemon",
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 15,
+    letterSpacing: 0.5,
   },
 });
