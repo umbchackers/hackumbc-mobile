@@ -23,6 +23,7 @@ interface Activity {
   time: string;
   activity: string;
   description: string;
+  location: string; 
 }
 
 interface DaySchedule {
@@ -171,6 +172,7 @@ export default function ScheduleScreen() {
             </Text>
 
             <Text style={styles.popuptime}>Time: {selectedActivity?.time}</Text>
+            <Text style={styles.popuptime}>Location: {selectedActivity?.location}</Text>
 
             <ScrollView
               style={styles.popupdesc}
