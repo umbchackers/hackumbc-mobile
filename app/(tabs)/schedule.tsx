@@ -22,8 +22,8 @@ const { width } = Dimensions.get("window");
 interface Activity {
   time: string;
   activity: string;
-  description: string;
   location: string; 
+  description: string;
 }
 
 interface DaySchedule {
@@ -172,7 +172,7 @@ export default function ScheduleScreen() {
             </Text>
 
             <Text style={styles.popuptime}>Time: {selectedActivity?.time}</Text>
-            <Text style={styles.popuptime}>Location: {selectedActivity?.location}</Text>
+            <Text style={styles.popuplocation}>Location: {selectedActivity?.location}</Text>
 
             <ScrollView
               style={styles.popupdesc}
@@ -386,6 +386,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   popuptime: {
+    fontSize: 13,
+    color: "#0c4b46",
+    padding: 0,
+    marginBottom: 4,
+    textAlign: "center",
+  },
+  popuplocation: {
     fontSize: 13,
     color: "#0c4b46",
     padding: 0,
