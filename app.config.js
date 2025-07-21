@@ -63,7 +63,7 @@ export default {
       }
     },
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "sdkVersion"
     },
     "updates": {
       "url": "https://u.expo.dev/e5b769d4-1ca0-4519-a9e9-a59ad274f93a"
