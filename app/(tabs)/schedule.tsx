@@ -198,15 +198,14 @@ export default function ScheduleScreen() {
                 style={styles.popupclose}
                 onPress={() => setModalVisible(false)}
               >
-                {/* <LinearGradient
+                <LinearGradient
                   colors={["#e95d2e", "#ed9c21"]}
                   style={styles.closeButtonGradient}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                 >
                   <Text style={styles.closeButtonText}>Close</Text>
-                </LinearGradient> */}
-                 <Text style={styles.closeButtonText}>Close</Text>
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           </View>
@@ -395,7 +394,7 @@ const styles = StyleSheet.create({
     position: "relative",
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.2)",
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "rgba(255, 255, 255, 0.85 )",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
@@ -478,9 +477,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginTop: 8,
     zIndex: 1,
-    backgroundColor: "transparent",
-    borderWidth: 3,
-    borderColor: "#00695c",
     justifyContent: "center",
     alignItems: "center",
   
