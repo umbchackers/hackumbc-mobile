@@ -8,6 +8,10 @@ import {
 } from 'aws-amplify/auth';
 import { AuthContextType, UserRole, UserState } from '@/types';
 import { serializeRoles, deserializeRoles } from '@/lib/util';
+import * as Notifications from 'expo-notifications';
+import { createApi } from '@/lib/api';
+
+type PushTokenAction = 'REGISTER' | 'UNREGISTER';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -34,6 +38,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Error clearing stored auth:', error);
     }
   };
+
+  const handlePushToken = async (action: PushTokenAction) => {
+     try {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Notification permissions not granted, cannot register token');
+        return;
+      }
+      
+      const tokenData = await Notifications.getExpoPushTokenAsync();
+      const expoPushToken = tokenData.data;
+
+      const idToken = user.idToken;
+      const api = createApi(idToken);
+
+      const response = await api.post<{ body: string, action: PushTokenAction }>('/admin/users/push_token', {
+        expoPushToken,
+        action
+      }, false);
+
+      console.log(response.body);
+      console.log(`Push token ${action} successful`);
+    }
+    catch (error) {
+      console.error('Error:', error);
+    }
+  }
 
   useEffect(() => {
     const validateAndLoadSession = async () => {
@@ -123,6 +154,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await SecureStore.setItemAsync('accessToken', accessToken);
           await SecureStore.setItemAsync('userRoles', serializeRoles(userRoles));
 
+          await handlePushToken('REGISTER');
+
           setUser({loggedIn: true, roles: userRoles, idToken, accessToken });
           setTokenExpiry(expiryDate);
           console.log('Cognito login success');
@@ -173,6 +206,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    await handlePushToken('UNREGISTER');
+
     try {
       await signOut();
       console.log('Amplify signOut successful');
